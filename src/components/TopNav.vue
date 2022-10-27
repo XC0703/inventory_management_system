@@ -82,7 +82,7 @@ export default {
   },
 }
 </script>
-<style lang="scss" >
+<style lang="scss">
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   border: none;
 }
@@ -92,7 +92,7 @@ export default {
   float: right;
   right: -1.2rem;
 }
-.el-menu--horizontal>.el-sub-menu .el-sub-menu__title:hover {
+.el-menu--horizontal>.el-sub-menu .el-sub-menu__title:hover{
   background-color: #293446 !important; 
 }
 .el-menu--horizontal>.el-sub-menu .el-sub-menu__title{

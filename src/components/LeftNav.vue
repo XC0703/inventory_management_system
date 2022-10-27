@@ -3,18 +3,10 @@
     <div class="logobox">
       <img class="logobox__logoimg" src="../assets/images/logo.png" alt="">
     </div>
-    <el-sub-menu v-for="menu in allmenu" :key="menu.menuname" :index=menu.menuid>
-      <template v-slot:title>
-        <i class="iconfont" :class="menu.icon"></i>
-        <span>{{menu.menuname}}</span>
-      </template>
-      <el-menu-item-group>
-        <el-menu-item v-for="chmenu in menu.menus" :index="'/'+chmenu.url" :key="chmenu.menuid">
+    <el-menu-item v-for="chmenu in allmenu" :index="'/'+chmenu.url" :key="chmenu.menuid">
           <i class="iconfont" :class="chmenu.icon"></i>
           <span>{{chmenu.menuname}}</span>
-        </el-menu-item>
-      </el-menu-item-group>
-    </el-sub-menu>
+    </el-menu-item>
   </el-menu>
 </template>
 
@@ -33,56 +25,32 @@ export default {
         success: true,
         data: [
           {
-            menuid: "1",
-            icon: 'icon-xiangmuguanli',
-            menuname: '基础管理',
-            url: null,
-            menus: [
-              {
-                menuid: 1-1,
-                icon: 'icon-goods',
-                menuname: '库存管理',
-                url: 'miserware',
-                menus: null
-              }
-            ]
+            menuid: 1,
+            icon: 'icon-goods',
+            menuname: '库存管理',
+            url: 'miserware',
+            menus: null
           },
           {
-            menuid: "2",
-            icon: 'icon-dingdanguanli',
+            menuid: 2,
+            icon: 'icon-dingdanjihe',
             menuname: '订单管理',
-            url: null,
-            menus: [
-              {
-                menuid: 2-1,
-                icon: 'icon-dingdanjihe',
-                menuname: '交易订单',
-                url: 'miserorder',
-                menus: null
-              },
-              {
-                menuid: 2-2,
-                icon: 'icon-gouwuche',
-                menuname: '临时订单',
-                url: 'misercart',
-                menus: null
-              }
-            ]
+            url: 'miserorder',
+            menus: null
           },
           {
-            menuid: "3",
-            icon: 'icon-xitongguanli',
-            menuname: '系统管理',
-            url: null,
-            menus: [
-              {
-                menuid: 3-1,
-                icon: 'icon-yonghuguanli',
-                menuname: '用户管理',
-                url: 'miseruser',
-                menus: null
-              }
-            ]
+            menuid: 2,
+            icon: 'icon-gouwuche',
+            menuname: '临时订单',
+            url: 'misercart',
+            menus: null
+          },
+          {
+            menuid: 3,
+            icon: 'icon-yonghuguanli',
+            menuname: '用户管理',
+            url: 'miseruser',
+            menus: null
           },
         ],
         msg: 'success'
