@@ -1,4 +1,5 @@
 <template>
+<div class="bgContainer">
   <div class="wrapper">
     <img class="wrapper__img" src="http://www.dell-lee.com/imgs/vue3/user.png"/>
     <div class="wrapper__input">
@@ -29,6 +30,7 @@
     <div class="wrapper__register-link" @click="handleLoginClick">已有账号去登陆</div>
     <ToastView v-if="show" :message="toastMessage" />
   </div>
+</div>
 </template>
 
 <script>
@@ -109,15 +111,24 @@ export default {
 
 <style lang="scss" scoped>
 @import '../../style/viriables.scss';
+.bgContainer{
+  width:100%;
+  height: 100vh;
+  background-repeat: no-repeat !important;
+	background-size: 100% 100% !important;
+  background:url('../../assets/images/bg.jpg');
+}
 .wrapper {
+  background-color: rgba(0, 0, 0, .1);
+  width:5rem;
   position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
+  top: 35%;
+  left:50%;
+  margin-left: -2.5rem;
   transform: translateY(-50%);
   &__img {
     display: block;
-    margin: 0 auto .4rem auto;
+    margin: 0.15rem auto .4rem auto;
     width: .66rem;
     height: .66rem;
   }
@@ -152,11 +163,14 @@ export default {
     color: $bgColor;
     font-size: .16rem;
     text-align: center;
+    cursor: pointer;
   }
   &__register-link {
+    margin-bottom: 0.15rem;
     text-align: center;
     font-size: .14rem;
     color: $content-notice-fontColor;
+    cursor: pointer;
   }
 }
 </style>

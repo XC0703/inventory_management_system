@@ -4,9 +4,13 @@
 </template>
 
 <script>
-
 export default {
   name: 'App',
+  created() {
+    if(this.$router.path !== '/'){
+      this.$router.replace('/')
+    }
+  }
 }
 </script>
 
