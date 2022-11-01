@@ -1,3 +1,4 @@
+<!-- 左侧导航栏组件 -->
 <template>
   <el-menu router :default-active="this.$route.path?this.$route.path:miserware" :collapse="collapsed" collapse-transition unique-opened class="el-menu-vertical-demo" background-color="#334157" text-color="#fff" active-text-color="#ffd04b">
     <div class="logobox">

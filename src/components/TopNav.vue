@@ -1,3 +1,4 @@
+<!-- 顶部导航栏组件 -->
 <template>
   <el-menu class="el-menu-demo" mode="horizontal" background-color="#334157" text-color="#fff" active-text-color="#fff">
     <div class="buttonimg">

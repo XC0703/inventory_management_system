@@ -7,10 +7,11 @@ import './style/index.scss'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import mitt from 'mitt'
+import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 
 const app = createApp(App)
 // app.use(store);
 app.use(router);
-app.use(ElementPlus)
 app.config.globalProperties.$bus = new mitt() // event Bus 用于无关系组件间的通信
+app.use(ElementPlus, {locale: zhCn,}) //汉化
 app.mount('#app')

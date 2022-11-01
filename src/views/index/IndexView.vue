@@ -72,5 +72,6 @@ export default {
 .index-main {
   padding: 0;
   border-left: 0.02rem solid #293446;
+  overflow: hidden;
 }
 </style>

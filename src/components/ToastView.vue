@@ -1,3 +1,4 @@
+<!-- 登录注册时的信息提示组件 -->
 <template>
     <div class="toast">{{message}}</div>
 </template>
