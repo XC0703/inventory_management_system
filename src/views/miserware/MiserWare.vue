@@ -37,14 +37,14 @@
             </el-col>
         </el-row>
         <!-- 用户列表区域  -->
-        <el-table @selection-change="selsChange" :data="wareList.slice((pageparm.currentPage - 1) * pageparm.pageSize, pageparm.currentPage * pageparm.pageSize)"  v-loading="loading" border element-loading-text="拼命加载中" stripe style="margin:0.15rem 0rem 0.15rem 0rem;max-height: 3.2rem;">
+        <el-table height='3.2rem' @sort-change="sortChange" @selection-change="selsChange" :data="wareList.slice((pageparm.currentPage - 1) * pageparm.pageSize, pageparm.currentPage * pageparm.pageSize)"  v-loading="loading" border element-loading-text="拼命加载中" stripe style="margin:0.15rem 0rem 0.15rem 0rem;max-height: 3.2rem;">
             <el-table-column align="center" type="selection" width="60"></el-table-column>
             <el-table-column align="center" label="物品id" prop="wareId" min-width="70"></el-table-column>
             <el-table-column align="center" label="物品名称" prop="wareName" min-width="120"></el-table-column>
-            <el-table-column align="center" label="物品价格" prop="warePower" min-width="100"></el-table-column>
-            <el-table-column align="center" label="库存数量" prop="wareCount" min-width="100"></el-table-column>
-            <el-table-column align="center" label="创建时间" prop="createTime" min-width="145"></el-table-column>
-            <el-table-column align="center" label="更新时间" prop="updateTime" min-width="145"></el-table-column>
+            <el-table-column align="center" label="物品价格" prop="warePower" min-width="100" sortable="custom"></el-table-column>
+            <el-table-column align="center" label="库存数量" prop="wareCount" min-width="100" sortable="custom"></el-table-column>
+            <el-table-column align="center" label="创建时间" prop="createTime" min-width="145" sortable="custom"></el-table-column>
+            <el-table-column align="center" label="更新时间" prop="updateTime" min-width="145" sortable="custom"></el-table-column>
             <el-table-column align="center" label="操作" min-width="140">
                 <template #default="scope">
                     <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -80,6 +80,7 @@
 </template>
 
 <script >
+import tableSortChange from '../../utils/tableSortChange'
 import PaginateView from '../../components/PaginateView'
 import getWare from './getWare'
 import {singleDelete,batchDelete} from './deleteWare'
@@ -105,6 +106,8 @@ export default {
                 pageSize: 10,
                 total: 0
             },
+            // 排序时的列数类型参数
+            column:'',
             // 页面此时需要展示的物品列表
             wareList: [],
             // 编辑/增加操作需要的参数
@@ -112,7 +115,7 @@ export default {
             editFormVisible: false, //控制编辑/增加页面显示与隐藏
             editForm: { 
                 wareId:'',
-                wareName:"",
+                wareName:'',
                 warePower:'',
                 wareCount:'',
             },
@@ -140,7 +143,7 @@ export default {
                 {
                     "wareId":1,
                     "wareName":"丁真珍珠",
-                    "warePower":20020703,
+                    "warePower":12020703,
                     "wareCount":10,
                     "createTime":"2018-05-19 11:23:20",
                     "updateTime":"2018-05-19 11:23:20"
@@ -172,7 +175,7 @@ export default {
                 {
                     "wareId":5,
                     "wareName":"赢学家",
-                    "warePower":20020703,
+                    "warePower":34020703,
                     "wareCount":100,
                     "createTime":"2021-05-16 14:45:07",
                     "updateTime":"2022-05-16 14:45:07"
@@ -190,8 +193,8 @@ export default {
                     "wareName":"考编丁真",
                     "warePower":20020703,
                     "wareCount":10,
-                    "createTime":"2021-05-16 14:45:07",
-                    "updateTime":"2022-05-16 14:45:07"
+                    "createTime":"2017-05-16 14:45:07",
+                    "updateTime":"2019-05-16 14:45:07"
                 },
                 {
                     "wareId":8,
@@ -206,7 +209,7 @@ export default {
                     "wareName":"丁真珍珠",
                     "warePower":20020703,
                     "wareCount":10,
-                    "createTime":"2021-05-16 14:45:07",
+                    "createTime":"2020-05-16 14:45:07",
                     "updateTime":"2022-05-16 14:45:07"
                 },
                 {
@@ -220,10 +223,10 @@ export default {
                 {
                     "wareId":11,
                     "wareName":"丁真珍珠",
-                    "warePower":20020703,
+                    "warePower":25020703,
                     "wareCount":10,
-                    "createTime":"2021-05-16 14:45:07",
-                    "updateTime":"2022-05-16 14:45:07"
+                    "createTime":"2011-05-16 14:45:07",
+                    "updateTime":"2020-05-16 14:45:07"
                 },
             ]
             // 将接口获取的数据进行处理
@@ -280,9 +283,16 @@ export default {
             this.formInline.limit = parm.pageSize
             this.getWareList()
             // this.showWare()
+            this.sortChange(this.column)
         },
         // 导出为表格函数 
-        handleExport
+        handleExport,
+        // 自定义表格排序规则
+        sortChange(column){
+            // 拷贝排序时的列数类型参数
+            this.column = column;
+            this.wareList = JSON.parse(JSON.stringify(tableSortChange(column,this.wareList)));
+        }
     }
 }
 </script>
@@ -310,68 +320,5 @@ export default {
 }
 .icon-tianjiawupin,.icon-daochubiaoge,.icon-shanchupiliangshanchu{
     color:#fff !important;
-}
-// 滚动条样式设置
-.el-table:hover{
-    overflow-x: hidden;
-    overflow-y: auto;
-}
-.el-table::-webkit-scrollbar {
-    width: 0.1rem;
-}
-/*定义滚动条轨道 内阴影+圆角*/
-.el-table::-webkit-scrollbar-track {
-    border-radius: 0.06rem;
-    background:rgba(15, 38, 80,0.1);  
-}
-/*定义滑块 内阴影+圆角*/
-.el-table::-webkit-scrollbar-thumb {
-  /*滚动条里面小方块*/
-  border-radius   : 0.05rem;
-  background-color: rgba(15, 38, 80,0.4);
-  background-image: -webkit-linear-gradient(
-    45deg,
-    rgba(255, 255, 255, 0.3) 25%,
-    transparent 25%,
-    transparent 50%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0.3) 75%,
-    transparent 75%,
-    transparent
-  );
-  background-image: -moz-linear-gradient(
-    45deg,
-    rgba(255, 255, 255, 0.3) 25%,
-    transparent 25%,
-    transparent 50%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0.3) 75%,
-    transparent 75%,
-    transparent
-  );
-  background-image: -o-linear-gradient(
-    45deg,
-    rgba(255, 255, 255, 0.3) 25%,
-    transparent 25%,
-    transparent 50%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0.3) 75%,
-    transparent 75%,
-    transparent
-  );
-  background-image: -ms-linear-gradient(
-    45deg,
-    rgba(255, 255, 255, 0.3) 25%,
-    transparent 25%,
-    transparent 50%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0.3) 75%,
-    transparent 75%,
-    transparent
-  );
-}
-// 去除表格滚动条
-::v-deep .el-scrollbar__bar.is-horizontal {
-    height:0;
 }
 </style>

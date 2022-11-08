@@ -2,20 +2,20 @@ import {post} from '../../utils/request';
 import { ElMessage } from "element-plus";
 import getNowTime from '../../utils/getNowTime'
 
-// 添加/编辑物品后进行保存
+// 添加/编辑用户后进行保存
 const submitForm = async(editData,fun,title)=>{
     const submitData = {
-        wareId:'',
-        wareName:'',
-        warePower:'',
-        wareCount:'',
+        userId:'',
+        userName:'',
+        userPassword:'',
+        userPower:'',
         createTime:'',
         updateTime:''
     };
-    submitData.wareId = editData.wareId;
-    submitData.wareName = editData.wareName;
-    submitData.warePower = editData.warePower;
-    submitData.wareCount = editData.wareCount;
+    submitData.userId = editData.userId;
+    submitData.userName = editData.userName;
+    submitData.userPassword = editData.userPassword;
+    submitData.userPower = editData.userPower;
     const nowTime = getNowTime();
     // console.log(nowTime)
     // 添加
@@ -23,7 +23,7 @@ const submitForm = async(editData,fun,title)=>{
         submitData.createTime = nowTime;
         submitData.updateTime = nowTime;
         // console.log("添加")
-        const result = await post('/ware/miserware/save',submitData)
+        const result = await post('/user/miseruser/save',submitData)
         .then(()=>{
             // console.log(result)
             if (result?.msg === "success") {
@@ -40,7 +40,7 @@ const submitForm = async(editData,fun,title)=>{
         submitData.createTime = editData.createTime;
         submitData.updateTime = editData.nowTime;
         // console.log('编辑')
-        const result = await post('/ware/miserware/update',editData)
+        const result = await post('/user/miseruser/update',editData)
         .then(()=>{
             // console.log(result)
             if (result?.msg === "success") {
