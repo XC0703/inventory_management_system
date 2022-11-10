@@ -1,6 +1,6 @@
 import {post} from '../../utils/request';
 import { ElMessage } from "element-plus";
-import getNowTime from '../../utils/getNowTime'
+import {getNowTime} from '../../utils/timeEffect'
 
 // 添加/编辑用户后进行保存
 const submitForm = async(editData,fun,title)=>{
@@ -38,7 +38,7 @@ const submitForm = async(editData,fun,title)=>{
         })
     }else if(title == '编辑'){
         submitData.createTime = editData.createTime;
-        submitData.updateTime = editData.nowTime;
+        submitData.updateTime = nowTime;
         // console.log('编辑')
         const result = await post('/user/miseruser/update',editData)
         .then(()=>{

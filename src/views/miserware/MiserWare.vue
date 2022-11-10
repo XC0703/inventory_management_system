@@ -43,8 +43,8 @@
             <el-table-column align="center" label="物品名称" prop="wareName" min-width="120"></el-table-column>
             <el-table-column align="center" label="物品价格" prop="warePower" min-width="100" sortable="custom"></el-table-column>
             <el-table-column align="center" label="库存数量" prop="wareCount" min-width="100" sortable="custom"></el-table-column>
-            <el-table-column align="center" label="创建时间" prop="createTime" min-width="145" sortable="custom"></el-table-column>
-            <el-table-column align="center" label="更新时间" prop="updateTime" min-width="145" sortable="custom"></el-table-column>
+            <el-table-column align="center" label="创建时间" prop="createTime" :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
+            <el-table-column align="center" label="更新时间" prop="updateTime" :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
             <el-table-column align="center" label="操作" min-width="140">
                 <template #default="scope">
                     <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -86,6 +86,8 @@ import getWare from './getWare'
 import {singleDelete,batchDelete} from './deleteWare'
 import submitForm from './editWare'
 import handleExport from './exportWare'
+import {formatDate} from '../../utils/timeEffect'
+import simulateDataList from './simulateDataList.json'
 export default {
     name:'MiserWare',
     components:{PaginateView},
@@ -139,96 +141,6 @@ export default {
         async getWareList () {
             // 模拟获取全部数据
             // 模拟数据--实际上通过接口获取
-            let simulateDataList = [
-                {
-                    "wareId":1,
-                    "wareName":"丁真珍珠",
-                    "warePower":12020703,
-                    "wareCount":10,
-                    "createTime":"2018-05-19 11:23:20",
-                    "updateTime":"2018-05-19 11:23:20"
-                },
-                {
-                    "wareId":2,
-                    "wareName":"谷圣人",
-                    "warePower":20020703,
-                    "wareCount":40,
-                    "createTime":"2018-05-18 22:04:51",
-                    "updateTime":"2018-05-18 22:04:51"
-                },
-                {
-                    "wareId":3,
-                    "wareName":"赛博顶针",
-                    "warePower":20020703,
-                    "wareCount":100,
-                    "createTime":"2019-05-18 22:04:51",
-                    "updateTime":"2018-05-18 22:04:51"
-                },
-                {
-                    "wareId":4,
-                    "wareName":"考编丁真",
-                    "warePower":20020703,
-                    "wareCount":10,
-                    "createTime":"2021-05-16 14:45:07",
-                    "updateTime":"2022-05-16 14:45:07"
-                },
-                {
-                    "wareId":5,
-                    "wareName":"赢学家",
-                    "warePower":34020703,
-                    "wareCount":100,
-                    "createTime":"2021-05-16 14:45:07",
-                    "updateTime":"2022-05-16 14:45:07"
-                },
-                {
-                    "wareId":6,
-                    "wareName":"丁真珍珠",
-                    "warePower":20020703,
-                    "wareCount":10,
-                    "createTime":"2021-05-16 14:45:07",
-                    "updateTime":"2022-05-16 14:45:07"
-                },
-                {
-                    "wareId":7,
-                    "wareName":"考编丁真",
-                    "warePower":20020703,
-                    "wareCount":10,
-                    "createTime":"2017-05-16 14:45:07",
-                    "updateTime":"2019-05-16 14:45:07"
-                },
-                {
-                    "wareId":8,
-                    "wareName":"赢学家",
-                    "warePower":20020703,
-                    "wareCount":100,
-                    "createTime":"2021-05-16 14:45:07",
-                    "updateTime":"2022-05-16 14:45:07"
-                },
-                {
-                    "wareId":9,
-                    "wareName":"丁真珍珠",
-                    "warePower":20020703,
-                    "wareCount":10,
-                    "createTime":"2020-05-16 14:45:07",
-                    "updateTime":"2022-05-16 14:45:07"
-                },
-                {
-                    "wareId":10,
-                    "wareName":"赢学家",
-                    "warePower":20020703,
-                    "wareCount":100,
-                    "createTime":"2021-05-16 14:45:07",
-                    "updateTime":"2022-05-16 14:45:07"
-                },
-                {
-                    "wareId":11,
-                    "wareName":"丁真珍珠",
-                    "warePower":25020703,
-                    "wareCount":10,
-                    "createTime":"2011-05-16 14:45:07",
-                    "updateTime":"2020-05-16 14:45:07"
-                },
-            ]
             // 将接口获取的数据进行处理
             this.wareList = simulateDataList; //初始时全部展示
             this.loading = false
@@ -292,6 +204,12 @@ export default {
             // 拷贝排序时的列数类型参数
             this.column = column;
             this.wareList = JSON.parse(JSON.stringify(tableSortChange(column,this.wareList)));
+        },
+        // 将后端传递过来的时间进行格式转换
+        formatDate(row, column) {
+            // 获取单元格数据
+            let data = row[column.property]
+            return formatDate(data)
         }
     }
 }

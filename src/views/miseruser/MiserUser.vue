@@ -43,8 +43,8 @@
                 <el-table-column align="center" label="用户名称" prop="userName" min-width="110"></el-table-column>
                 <el-table-column align="center" label="用户密码" prop="userPassword" min-width="110"></el-table-column>
                 <el-table-column align="center" label="用户权限" prop="userPower" min-width="100" sortable="custom"></el-table-column>
-                <el-table-column align="center" label="创建时间" prop="createTime" min-width="145" sortable="custom"></el-table-column>
-                <el-table-column align="center" label="更新时间" prop="updateTime" min-width="145" sortable="custom"></el-table-column>
+                <el-table-column align="center" label="创建时间" prop="createTime" :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
+                <el-table-column align="center" label="更新时间" prop="updateTime" :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
                 <el-table-column align="center" label="操作" min-width="140">
                     <template #default="scope">
                         <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -86,6 +86,8 @@ import getUser from './getUser'
 import {singleDelete,batchDelete} from './deleteUser'
 import submitForm from './editUser'
 import handleExport from './exportUser'
+import {formatDate} from '../../utils/timeEffect'
+import simulateDataList from './simulateDataList.json'
 export default {
     name:'MiserUser',
     components:{PaginateView},
@@ -139,96 +141,6 @@ export default {
         async getUserList () {
             // 模拟获取全部数据
             // 模拟数据--实际上通过接口获取
-            let simulateDataList = [
-                {
-                    "userId":1,
-                    "userName":"丁真珍珠",
-                    "userPassword":'asdhuaindaoj',
-                    "userPower":2000,
-                    "createTime":"2018-05-19 11:23:20",
-                    "updateTime":"2018-05-19 11:23:20"
-                },
-                {
-                    "userId":2,
-                    "userName":"谷圣人",
-                    "userPassword":'kfcvme50',
-                    "userPower":2001,
-                    "createTime":"2018-05-18 22:04:51",
-                    "updateTime":"2018-05-18 22:04:51"
-                },
-                {
-                    "userId":3,
-                    "userName":"赛博顶针",
-                    "userPassword":'ojwsuiwxu',
-                    "userPower":2003,
-                    "createTime":"2019-05-18 22:04:51",
-                    "updateTime":"2018-05-18 22:04:51"
-                },
-                {
-                    "userId":4,
-                    "userName":"考编丁真",
-                    "userPassword":'sfefweger',
-                    "userPower":2004,
-                    "createTime":"2021-05-16 14:45:07",
-                    "updateTime":"2022-05-16 14:45:07"
-                },
-                {
-                    "userId":5,
-                    "userName":"赢学家",
-                    "userPassword":'8r2930jd823',
-                    "userPower":2005,
-                    "createTime":"2021-05-16 14:45:07",
-                    "updateTime":"2022-05-16 14:45:07"
-                },
-                {
-                    "userId":6,
-                    "userName":"丁真珍珠",
-                    "userPassword":'scuyyds',
-                    "userPower":2006,
-                    "createTime":"2021-05-16 14:45:07",
-                    "updateTime":"2022-05-16 14:45:07"
-                },
-                {
-                    "userId":7,
-                    "userName":"考编丁真",
-                    "userPassword":'edwedewved',
-                    "userPower":2007,
-                    "createTime":"2021-05-16 14:45:07",
-                    "updateTime":"2022-05-16 14:45:07"
-                },
-                {
-                    "userId":8,
-                    "userName":"赢学家",
-                    "userPassword":'ifjweimicw',
-                    "userPower":2008,
-                    "createTime":"2021-05-16 14:45:07",
-                    "updateTime":"2022-05-16 14:45:07"
-                },
-                {
-                    "userId":9,
-                    "userName":"丁真珍珠",
-                    "userPassword":'xxxxsb',
-                    "userPower":2009,
-                    "createTime":"2021-05-16 14:45:07",
-                    "updateTime":"2022-05-16 14:45:07"
-                },
-                {
-                    "userId":10,
-                    "userName":"赢学家",
-                    "userPassword":'8j8hduh',
-                    "userPower":2010,
-                    "createTime":"2021-05-16 14:45:07",
-                    "updateTime":"2022-05-16 14:45:07"
-                },
-                {
-                    "userId":11,
-                    "userName":"丁真珍珠",
-                    "userPassword":'yydz',
-                    "userPower":2007,
-                    "createTime":"2021-05-16 14:45:07",
-                    "updateTime":"2022-05-16 14:45:07"
-                },
-            ]
             // 将接口获取的数据进行处理
             this.userList = simulateDataList; //初始时全部展示
             this.loading = false
@@ -292,6 +204,12 @@ export default {
             // 拷贝排序时的列数类型参数
             this.column = column;
             this.userList = JSON.parse(JSON.stringify(tableSortChange(column,this.userList)));
+        },
+        // 将后端传递过来的时间进行格式转换
+        formatDate(row, column) {
+            // 获取单元格数据
+            let data = row[column.property]
+            return formatDate(data)
         }
     }
 }
