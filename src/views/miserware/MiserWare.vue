@@ -39,15 +39,16 @@
         <!-- 用户列表区域  -->
         <el-table height='3.2rem' @sort-change="sortChange" @selection-change="selsChange" :data="wareList.slice((pageparm.currentPage - 1) * pageparm.pageSize, pageparm.currentPage * pageparm.pageSize)"  v-loading="loading" border element-loading-text="拼命加载中" stripe style="margin:0.15rem 0rem 0.15rem 0rem;max-height: 3.2rem;">
             <el-table-column align="center" type="selection" width="60"></el-table-column>
-            <el-table-column align="center" label="物品id" prop="wareId" min-width="70"></el-table-column>
-            <el-table-column align="center" label="物品名称" prop="wareName" min-width="120"></el-table-column>
-            <el-table-column align="center" label="物品价格" prop="warePower" min-width="100" sortable="custom"></el-table-column>
-            <el-table-column align="center" label="库存数量" prop="wareCount" min-width="100" sortable="custom"></el-table-column>
-            <el-table-column align="center" label="创建时间" prop="createTime" :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
-            <el-table-column align="center" label="更新时间" prop="updateTime" :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
-            <el-table-column align="center" label="操作" min-width="140">
+            <el-table-column align="center" label="物品id" prop="wareId" :show-overflow-tooltip='true' min-width="70"></el-table-column>
+            <el-table-column align="center" label="物品名称" prop="wareName" :show-overflow-tooltip='true' min-width="120"></el-table-column>
+            <el-table-column align="center" label="物品价格" prop="warePower" :show-overflow-tooltip='true' min-width="100" sortable="custom"></el-table-column>
+            <el-table-column align="center" label="库存数量" prop="wareCount" :show-overflow-tooltip='true' min-width="100" sortable="custom"></el-table-column>
+            <el-table-column align="center" label="创建时间" prop="createTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
+            <el-table-column align="center" label="更新时间" prop="updateTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
+            <el-table-column align="center" label="操作" min-width="175">
                 <template #default="scope">
                     <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                    <el-button size="small" type="primary" @click="handleAddOrder(scope.$index, scope.row)">交易</el-button>
                     <el-button size="small" type="danger" @click="singleDelete(scope.$index, scope.row,showWare)">删除</el-button>
                 </template>
             </el-table-column>
@@ -75,6 +76,27 @@
                 <el-button size="small" type="primary" :loading="loading" class="title"  @click="submitForm(editForm,showWare,title)">保存</el-button>
             </div>
         </el-dialog>
+        <!-- 订单交易页面 -->
+        <el-dialog title="交易" v-model="addOrderVisible" width="30%" :before-close="closeOrderDialog">
+            <el-form label-width="1.2rem" :model="addOrder" ref="addOrder">
+                <el-form-item label="订单id" prop="orderId">
+                    <el-input size="small" v-model="addOrder.orderId" auto-complete="off" placeholder="请输入物品id"></el-input>
+                </el-form-item>
+                <el-form-item label="物品id" prop="wareId">
+                <el-input size="small" v-model="addOrder.wareId" auto-complete="off" placeholder="请输入物品名称"></el-input>
+                </el-form-item>
+                <el-form-item label="物品名称" prop="wareName">
+                <el-input size="small" v-model="addOrder.wareName" auto-complete="off" placeholder="请输入物品价格"></el-input>
+                </el-form-item>
+                <el-form-item label="物品数量" prop="wareCount">
+                    <el-input-number v-model="addOrder.wareCount" size="small" :min="1" />
+                </el-form-item>
+            </el-form>
+            <div slot:footer class="dialog-footer" style="padding-left:0.8rem">
+                <el-button style="margin-right:0.6rem;" size="small" @click="closeOrderDialog">取消</el-button>
+                <el-button size="small" type="primary" :loading="loading" class="title"  @click="submitOrder(addOrder)">加入订单</el-button>
+            </div>
+        </el-dialog>
     </el-card>
 </div>
 </template>
@@ -85,6 +107,7 @@ import PaginateView from '../../components/PaginateView'
 import getWare from './getWare'
 import {singleDelete,batchDelete} from './deleteWare'
 import submitForm from './editWare'
+import submitOrder from './addOrder'
 import handleExport from './exportWare'
 import {formatDate} from '../../utils/timeEffect'
 import simulateDataList from './simulateDataList.json'
@@ -115,7 +138,7 @@ export default {
             // 编辑/增加操作需要的参数
             title: '添加',
             editFormVisible: false, //控制编辑/增加页面显示与隐藏
-            editForm: { 
+            editForm: {
                 wareId:'',
                 wareName:'',
                 warePower:'',
@@ -127,6 +150,14 @@ export default {
                 wareName:[{ required: true, message: '请输入物品名称', trigger: 'blur' }],
                 warePower: [{ required: true, message: '请输入物品价格', trigger: 'blur' }],
                 wareCount:[{ required: true, message: '请输入库存数量', trigger: 'blur' }]
+            },
+            // 交易操作时需要的参数
+            addOrderVisible: false, //控制添加订单页面显示与隐藏
+            addOrder:{
+                orderId:'',
+                wareId:'',
+                wareName:'',
+                wareCount:0
             },
             //选中的值显示--用于批量删除
             sels: []
@@ -188,6 +219,19 @@ export default {
         closeDialog() {
             this.editFormVisible = false
             this.$refs.editForm.resetFields();
+        },
+        // 交易操作
+        async handleAddOrder(index,row){
+            this.addOrderVisible = true
+            this.addOrder.orderId = ''
+            this.addOrder.wareId = row.wareId
+            this.addOrder.wareName = row.wareName
+            this.addOrder.wareCount = 0
+        },
+        submitOrder,
+        closeOrderDialog(){
+            this.addOrderVisible = false
+            this.$refs.addOrder.resetFields();
         },
         // 分页插件事件--通过改变分页中间变量来改变分页参数
         callFather(parm) {

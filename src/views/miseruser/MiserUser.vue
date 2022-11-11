@@ -39,12 +39,12 @@
         <!-- 用户列表区域  -->
         <el-table height='3.2rem' @sort-change="sortChange" @selection-change="selsChange" :data="userList.slice((pageparm.currentPage - 1) * pageparm.pageSize, pageparm.currentPage * pageparm.pageSize)"  v-loading="loading" border element-loading-text="拼命加载中" stripe style="margin:0.15rem 0rem 0.15rem 0rem;max-height: 3.2rem;">
                 <el-table-column align="center" type="selection" width="60"></el-table-column>
-                <el-table-column align="center" label="用户id" prop="userId" min-width="70"></el-table-column>
-                <el-table-column align="center" label="用户名称" prop="userName" min-width="110"></el-table-column>
-                <el-table-column align="center" label="用户密码" prop="userPassword" min-width="110"></el-table-column>
-                <el-table-column align="center" label="用户权限" prop="userPower" min-width="100" sortable="custom"></el-table-column>
-                <el-table-column align="center" label="创建时间" prop="createTime" :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
-                <el-table-column align="center" label="更新时间" prop="updateTime" :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
+                <el-table-column align="center" label="用户id" prop="userId" :show-overflow-tooltip='true' min-width="70"></el-table-column>
+                <el-table-column align="center" label="用户名称" prop="userName" :show-overflow-tooltip='true' min-width="110"></el-table-column>
+                <el-table-column align="center" label="用户密码" prop="userPassword" :show-overflow-tooltip='true' min-width="110"></el-table-column>
+                <el-table-column align="center" label="用户权限" prop="userPower" :show-overflow-tooltip='true' filter-multiple min-width="100" sortable="custom"></el-table-column>
+                <el-table-column align="center" label="创建时间" prop="createTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
+                <el-table-column align="center" label="更新时间" prop="updateTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
                 <el-table-column align="center" label="操作" min-width="140">
                     <template #default="scope">
                         <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>

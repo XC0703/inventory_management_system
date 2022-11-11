@@ -33,13 +33,13 @@
         <!-- 用户列表区域  -->
         <el-table height='3.2rem' @sort-change="sortChange" @selection-change="selsChange" :data="orderList.slice((pageparm.currentPage - 1) * pageparm.pageSize, pageparm.currentPage * pageparm.pageSize)"  v-loading="loading" border element-loading-text="拼命加载中" stripe style="margin:0.15rem 0rem 0.15rem 0rem;max-height: 3.2rem;">
             <el-table-column align="center" type="selection" width="60"></el-table-column>
-            <el-table-column align="center" label="订单id" prop="orderId" min-width="85"></el-table-column>
-            <el-table-column align="center" label="用户id" prop="userId" min-width="85"></el-table-column>
-            <el-table-column align="center" label="用户名称" prop="userName" min-width="100"></el-table-column>
-            <el-table-column align="center" label="物品id" prop="wareId" min-width="85"></el-table-column>
-            <el-table-column align="center" label="物品名称" prop="wareName" min-width="100"></el-table-column>
-            <el-table-column align="center" label="物品数量" prop="wareCount" min-width="100" sortable="custom"></el-table-column>
-            <el-table-column align="center" label="创建时间" prop="createTime" :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
+            <el-table-column align="center" label="订单id" prop="orderId" :show-overflow-tooltip='true' min-width="85"></el-table-column>
+            <el-table-column align="center" label="用户id" prop="userId" :show-overflow-tooltip='true' min-width="85"></el-table-column>
+            <el-table-column align="center" label="用户名称" prop="userName" :show-overflow-tooltip='true' min-width="100"></el-table-column>
+            <el-table-column align="center" label="物品id" prop="wareId" :show-overflow-tooltip='true' min-width="85"></el-table-column>
+            <el-table-column align="center" label="物品名称" prop="wareName" :show-overflow-tooltip='true' min-width="100"></el-table-column>
+            <el-table-column align="center" label="物品数量" prop="wareCount" :show-overflow-tooltip='true' min-width="100" sortable="custom"></el-table-column>
+            <el-table-column align="center" label="创建时间" prop="createTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
             <el-table-column align="center" label="操作" min-width="140">
                 <template #default="scope">
                     <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
