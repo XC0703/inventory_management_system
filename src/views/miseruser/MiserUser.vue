@@ -57,9 +57,6 @@
         <!-- 编辑/增加界面 -->
         <el-dialog :title="title" v-model="editFormVisible" width="30%" :before-close="closeDialog">
                 <el-form label-width="1.2rem" :model="editForm" :rules="rules" ref="editForm">
-                    <el-form-item label="用户id" prop="userId">
-                        <el-input size="small" v-model="editForm.userId" auto-complete="off" placeholder="请输入用户id"></el-input>
-                    </el-form-item>
                     <el-form-item label="用户名称" prop="userName">
                     <el-input size="small" v-model="editForm.userName" auto-complete="off" placeholder="请输入用户名称"></el-input>
                     </el-form-item>
@@ -67,12 +64,12 @@
                     <el-input size="small" v-model="editForm.userPassword" auto-complete="off" placeholder="请输入用户密码"></el-input>
                     </el-form-item>
                     <el-form-item label="用户权限" prop="userPower">
-                    <el-input size="small" v-model="editForm.userPower" auto-complete="off" placeholder="请输入用户权限"></el-input>
+                    <el-input size="small" v-model.number="editForm.userPower" auto-complete="off" placeholder="请输入用户权限"></el-input>
                     </el-form-item>
                 </el-form>
                 <div slot:footer class="dialog-footer" style="padding-left:0.8rem">
                     <el-button style="margin-right:0.6rem;" size="small" @click="closeDialog">取消</el-button>
-                    <el-button size="small" type="primary" :loading="loading" class="title"  @click="submitForm(editForm,showUser,title)">保存</el-button>
+                    <el-button size="small" type="primary" :loading="loading" class="title"  @click="submitForm(editForm,showUser,title);closeDialog()">保存</el-button>
                 </div>
         </el-dialog>
     </el-card>
@@ -116,17 +113,15 @@ export default {
             title: '添加',
             editFormVisible: false, //控制编辑/增加页面显示与隐藏
             editForm: { 
-                userId:'',
                 userName:'',
                 userPassword:'',
                 userPower:'',
             },
             // 编辑/增加操作时的rules表单验证
             rules: {
-                userId: [{ required: true, message: '请输入用户id', trigger: 'blur' }],
                 userName:[{ required: true, message: '请输入用户名称', trigger: 'blur' }],
                 userPassword:[{ required: true, message: '请输入用户密码', trigger: 'blur' }],
-                userPower: [{ required: true, message: '请输入用户权限', trigger: 'blur' }]
+                userPower: [{ required: true, message: '请输入用户权限', trigger: 'blur' },{ type:'number',message:'必须是数字',trigger: 'blur' }]
             },
             //选中的值显示--用于批量删除
             sels: []
@@ -170,13 +165,11 @@ export default {
             this.editFormVisible = true
             if (row != undefined && row != 'undefined') {
                 this.title = '编辑'
-                this.editForm.userId = row.userId
                 this.editForm.userName = row.userName
                 this.editForm.userPassword = row.userPassword
                 this.editForm.userPower = row.userPower
             } else {
                 this.title = '添加'
-                this.editForm.userId = ''
                 this.editForm.userName = ''
                 this.editForm.userPassword = ''
                 this.editForm.userPower = ''

@@ -23,7 +23,7 @@ const formatDate = (oldDate)=>{
     const m = date.getMinutes()
     const s = date.getSeconds()
 
-    const dateString = Y + '-' + add0(M) + '-' + add0(D) + '  ' + add0(h) + ':' + add0(m) + ':' + add0(s)
+    const dateString = Y + '-' + add0(M) + '-' + add0(D) + ' ' + add0(h) + ':' + add0(m) + ':' + add0(s)
     return dateString
 
     // 方式2 转换为'yyyy/MM/dd HH:mm:ss'

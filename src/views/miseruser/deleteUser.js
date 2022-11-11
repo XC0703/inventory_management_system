@@ -2,6 +2,7 @@ import {post} from '../../utils/request';
 import { ElMessage,ElMessageBox } from "element-plus";
 // 删除用户函数
 const handleDetele = async(deleteIdList,fun)=>{
+    console.log(deleteIdList)
     const result = post('/user/miseruser/delete',deleteIdList)
     .then(()=>{
         // console.log(result)

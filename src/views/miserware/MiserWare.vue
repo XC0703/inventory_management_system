@@ -58,43 +58,37 @@
         <!-- 编辑/增加界面 -->
         <el-dialog :title="title" v-model="editFormVisible" width="30%" :before-close="closeDialog">
             <el-form label-width="1.2rem" :model="editForm" :rules="rules" ref="editForm">
-                <el-form-item label="物品id" prop="wareId">
-                    <el-input size="small" v-model="editForm.wareId" auto-complete="off" placeholder="请输入物品id"></el-input>
-                </el-form-item>
                 <el-form-item label="物品名称" prop="wareName">
                 <el-input size="small" v-model="editForm.wareName" auto-complete="off" placeholder="请输入物品名称"></el-input>
                 </el-form-item>
                 <el-form-item label="物品价格" prop="warePower">
-                <el-input size="small" v-model="editForm.warePower" auto-complete="off" placeholder="请输入物品价格"></el-input>
+                <el-input size="small" v-model.number="editForm.warePower" auto-complete="off" placeholder="请输入物品价格"></el-input>
                 </el-form-item>
                 <el-form-item label="库存数量" prop="wareCount">
-                <el-input size="small" v-model="editForm.wareCount" auto-complete="off" placeholder="请输入库存数量"></el-input>
+                <el-input size="small" v-model.number="editForm.wareCount" auto-complete="off" placeholder="请输入库存数量"></el-input>
                 </el-form-item>
             </el-form>
             <div slot:footer class="dialog-footer" style="padding-left:0.8rem">
                 <el-button style="margin-right:0.6rem;" size="small" @click="closeDialog">取消</el-button>
-                <el-button size="small" type="primary" :loading="loading" class="title"  @click="submitForm(editForm,showWare,title)">保存</el-button>
+                <el-button size="small" type="primary" :loading="loading" class="title"  @click="submitForm(editForm,showWare,title);closeDialog()">保存</el-button>
             </div>
         </el-dialog>
         <!-- 订单交易页面 -->
         <el-dialog title="交易" v-model="addOrderVisible" width="30%" :before-close="closeOrderDialog">
             <el-form label-width="1.2rem" :model="addOrder" ref="addOrder">
-                <el-form-item label="订单id" prop="orderId">
-                    <el-input size="small" v-model="addOrder.orderId" auto-complete="off" placeholder="请输入物品id"></el-input>
-                </el-form-item>
                 <el-form-item label="物品id" prop="wareId">
-                <el-input size="small" v-model="addOrder.wareId" auto-complete="off" placeholder="请输入物品名称"></el-input>
+                <el-input size="small" v-model="addOrder.wareId" auto-complete="off" :disabled="true"></el-input>
                 </el-form-item>
                 <el-form-item label="物品名称" prop="wareName">
-                <el-input size="small" v-model="addOrder.wareName" auto-complete="off" placeholder="请输入物品价格"></el-input>
+                <el-input size="small" v-model="addOrder.wareName" auto-complete="off" :disabled="true"></el-input>
                 </el-form-item>
                 <el-form-item label="物品数量" prop="wareCount">
                     <el-input-number v-model="addOrder.wareCount" size="small" :min="1" />
                 </el-form-item>
             </el-form>
-            <div slot:footer class="dialog-footer" style="padding-left:0.8rem">
-                <el-button style="margin-right:0.6rem;" size="small" @click="closeOrderDialog">取消</el-button>
-                <el-button size="small" type="primary" :loading="loading" class="title"  @click="submitOrder(addOrder)">加入订单</el-button>
+            <div slot:footer class="dialog-footer" style="padding-left:0.5rem">
+                <el-button  size="small" type="primary" style="margin-right:0.4rem" @click="submitOrder(addOrder,'cart');closeOrderDialog()">加入临时订单</el-button>
+                <el-button size="small" type="primary" :loading="loading" @click="submitOrder(addOrder,'order');closeOrderDialog()">直接加入订单</el-button>
             </div>
         </el-dialog>
     </el-card>
@@ -139,22 +133,20 @@ export default {
             title: '添加',
             editFormVisible: false, //控制编辑/增加页面显示与隐藏
             editForm: {
-                wareId:'',
                 wareName:'',
                 warePower:'',
                 wareCount:'',
+                createTime:''
             },
             // 编辑/增加操作时的rules表单验证
             rules: {
-                wareId: [{ required: true, message: '请输入物品id', trigger: 'blur' }],
                 wareName:[{ required: true, message: '请输入物品名称', trigger: 'blur' }],
-                warePower: [{ required: true, message: '请输入物品价格', trigger: 'blur' }],
-                wareCount:[{ required: true, message: '请输入库存数量', trigger: 'blur' }]
+                warePower: [{ required: true, message: '请输入物品价格', trigger: 'blur' },{ type:'number',message:'必须是数字',trigger: 'blur' }],
+                wareCount:[{ required: true, message: '请输入库存数量', trigger: 'blur' },{ type:'number',message:'必须是数字',trigger: 'blur' }]
             },
             // 交易操作时需要的参数
             addOrderVisible: false, //控制添加订单页面显示与隐藏
             addOrder:{
-                orderId:'',
                 wareId:'',
                 wareName:'',
                 wareCount:0
@@ -201,13 +193,12 @@ export default {
             this.editFormVisible = true
             if (row != undefined && row != 'undefined') {
                 this.title = '编辑'
-                this.editForm.wareId = row.wareId
                 this.editForm.wareName = row.wareName
                 this.editForm.warePower = row.warePower
                 this.editForm.wareCount = row.wareCount
+                this.editForm.createTime = formatDate(row.createTime)
             } else {
                 this.title = '添加'
-                this.editForm.wareId = ''
                 this.editForm.wareName = ''
                 this.editForm.warePower = ''
                 this.editForm.wareCount = ''
@@ -223,7 +214,6 @@ export default {
         // 交易操作
         async handleAddOrder(index,row){
             this.addOrderVisible = true
-            this.addOrder.orderId = ''
             this.addOrder.wareId = row.wareId
             this.addOrder.wareName = row.wareName
             this.addOrder.wareCount = 0
@@ -282,5 +272,11 @@ export default {
 }
 .icon-tianjiawupin,.icon-daochubiaoge,.icon-shanchupiliangshanchu{
     color:#fff !important;
+}
+::v-deep .el-input-number__decrease{
+    top: 0.025rem;
+} 
+::v-deep .el-input-number__increase{
+    top: 0.025rem;
 }
 </style>

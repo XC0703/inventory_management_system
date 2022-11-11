@@ -5,14 +5,13 @@ import {getNowTime} from '../../utils/timeEffect'
 // 添加/编辑物品后进行保存
 const submitForm = async(editData,fun,title)=>{
     const submitData = {
-        wareId:'',
+        wareId:'后端处理wareId',
         wareName:'',
         warePower:'',
         wareCount:'',
         createTime:'',
         updateTime:''
     };
-    submitData.wareId = editData.wareId;
     submitData.wareName = editData.wareName;
     submitData.warePower = editData.warePower;
     submitData.wareCount = editData.wareCount;
@@ -23,6 +22,7 @@ const submitForm = async(editData,fun,title)=>{
         submitData.createTime = nowTime;
         submitData.updateTime = nowTime;
         // console.log("添加")
+        console.log(submitData)
         const result = await post('/ware/miserware/save',submitData)
         .then(()=>{
             // console.log(result)
@@ -40,6 +40,7 @@ const submitForm = async(editData,fun,title)=>{
         submitData.createTime = editData.createTime;
         submitData.updateTime = nowTime;
         // console.log('编辑')
+        console.log(submitData)
         const result = await post('/ware/miserware/update',editData)
         .then(()=>{
             // console.log(result)

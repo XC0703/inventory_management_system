@@ -17,9 +17,10 @@ const submitForm = async(editData,fun)=>{
     submitData.userName = editData.userName;
     submitData.wareId = editData.wareId;
     submitData.wareName = editData.wareName;
-    submitData.orderCount = editData.orderCount;
+    submitData.wareCount = editData.wareCount;
     submitData.createTime = editData.createTime;
-    const result = await post('/order/miserorder/update',editData)
+    console.log(submitData)
+    const result = await post('/order/miserorder/update',submitData)
     .then(()=>{
         // console.log(result)
         if (result?.msg === "success") {

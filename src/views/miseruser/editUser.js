@@ -5,19 +5,19 @@ import {getNowTime} from '../../utils/timeEffect'
 // 添加/编辑用户后进行保存
 const submitForm = async(editData,fun,title)=>{
     const submitData = {
-        userId:'',
+        userId:'后端处理userId',
         userName:'',
         userPassword:'',
         userPower:'',
         createTime:'',
         updateTime:''
     };
-    submitData.userId = editData.userId;
     submitData.userName = editData.userName;
     submitData.userPassword = editData.userPassword;
     submitData.userPower = editData.userPower;
     const nowTime = getNowTime();
     // console.log(nowTime)
+    console.log(submitData)
     // 添加
     if(title == '添加'){
         submitData.createTime = nowTime;

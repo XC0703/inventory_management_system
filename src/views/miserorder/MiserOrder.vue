@@ -49,31 +49,22 @@
         </el-table>
         <!-- 分页组件 -->
         <PaginateView v-bind:child-msg="pageparm" @callFather="callFather"></PaginateView>
-        <!-- 编辑/增加界面 -->
+        <!-- 编辑界面 -->
         <el-dialog title="编辑" v-model="editFormVisible" width="30%" :before-close="closeDialog">
             <el-form label-width="1.2rem" :model="editForm" :rules="rules" ref="editForm">
-                <el-form-item label="订单id" prop="orderId">
-                    <el-input size="small" v-model="editForm.orderId" auto-complete="off" placeholder="请输入订单id"></el-input>
-                </el-form-item>
-                <el-form-item label="用户id" prop="userId">
-                <el-input size="small" v-model="editForm.userId" auto-complete="off" placeholder="请输入用户id"></el-input>
-                </el-form-item>
                 <el-form-item label="用户名称" prop="userName">
                 <el-input size="small" v-model="editForm.userName" auto-complete="off" placeholder="请输入用户名称"></el-input>
-                </el-form-item>
-                <el-form-item label="物品id" prop="wareId">
-                <el-input size="small" v-model="editForm.wareId" auto-complete="off" placeholder="请输入物品id"></el-input>
                 </el-form-item>
                 <el-form-item label="物品名称" prop="wareName">
                 <el-input size="small" v-model="editForm.wareName" auto-complete="off" placeholder="请输入物品名称"></el-input>
                 </el-form-item>
                 <el-form-item label="物品数量" prop="wareCount">
-                <el-input size="small" v-model="editForm.wareCount" auto-complete="off" placeholder="请输入物品数量"></el-input>
+                <el-input size="small" v-model.number="editForm.wareCount" auto-complete="off" placeholder="请输入物品数量"></el-input>
                 </el-form-item>
             </el-form>
             <div slot:footer class="dialog-footer" style="padding-left:0.8rem">
                 <el-button style="margin-right:0.6rem;" size="small" @click="closeDialog">取消</el-button>
-                <el-button size="small" type="primary" :loading="loading" class="title"  @click="submitForm(editForm,showOrde)">保存</el-button>
+                <el-button size="small" type="primary" :loading="loading" class="title"  @click="submitForm(editForm,showOrder)">保存</el-button>
             </div>
         </el-dialog>
     </el-card>
@@ -121,16 +112,14 @@ export default {
                     userName:'',
                     wareId:'',
                     wareName:'',
-                    wareCount:''
+                    wareCount:'',
+                    createTime:''
                 },
-                // 编辑/增加操作时的rules表单验证
+                // 编辑订单时的rules表单验证
                 rules: {
-                    orderId: [{ required: true, message: '请输入订单id', trigger: 'blur' }],
-                    userId:[{ required: true, message: '请输入用户id', trigger: 'blur' }],
-                    userName: [{ required: true, message: '请输入用户名称', trigger: 'blur' }],
-                    wareId:[{ required: true, message: '请输入物品id', trigger: 'blur' }],
+                    userName:[{ required: true, message: '请输入用户名称', trigger: 'blur' }],
                     wareName: [{ required: true, message: '请输入物品名称', trigger: 'blur' }],
-                    wareCount:[{ required: true, message: '请输入物品数量', trigger: 'blur' }]
+                    wareCount:[{ required: true, message: '请输入物品数量', trigger: 'blur' },{ type:'number',message:'必须是数字',trigger: 'blur' }]
                 },
                 //选中的值显示--用于批量删除
                 sels: []
@@ -172,6 +161,7 @@ export default {
         async handleEdit(index, row){
             this.query='' //编辑之前记得清空搜索栏
             this.editFormVisible = true
+            console.log(row)
             if (row != undefined && row != 'undefined') {
                 this.editForm.orderId = row.orderId
                 this.editForm.userId = row.userId
@@ -179,6 +169,7 @@ export default {
                 this.editForm.wareId = row.wareId
                 this.editForm.wareName = row.wareName
                 this.editForm.wareCount = row.wareCount
+                this.editForm.createTime = formatDate(row.createTime)
             }
         },
         // 编辑订单后进行保存
