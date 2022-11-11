@@ -5,7 +5,7 @@ import {getNowTime} from '../../utils/timeEffect'
 // 添加/编辑用户后进行保存
 const submitForm = async(editData,fun,title)=>{
     const submitData = {
-        userId:'后端处理userId',
+        userId:'',
         userName:'',
         userPassword:'',
         userPower:'',
@@ -17,12 +17,13 @@ const submitForm = async(editData,fun,title)=>{
     submitData.userPower = editData.userPower;
     const nowTime = getNowTime();
     // console.log(nowTime)
-    console.log(submitData)
     // 添加
     if(title == '添加'){
+        submitData.userId = '后端处理userId'
         submitData.createTime = nowTime;
         submitData.updateTime = nowTime;
         // console.log("添加")
+        console.log(submitData)
         const result = await post('/user/miseruser/save',submitData)
         .then(()=>{
             // console.log(result)
@@ -37,9 +38,11 @@ const submitForm = async(editData,fun,title)=>{
             ElMessage.error('添加失败，请稍后再试！')
         })
     }else if(title == '编辑'){
+        submitData.userId = editData.userId;
         submitData.createTime = editData.createTime;
         submitData.updateTime = nowTime;
         // console.log('编辑')
+        console.log(submitData)
         const result = await post('/user/miseruser/update',editData)
         .then(()=>{
             // console.log(result)

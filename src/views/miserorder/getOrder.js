@@ -7,6 +7,7 @@ const getOrder = (query)=>{
         let tempArr = [];
         let orderId = query;
         if(orderId!=''){
+            console.log(orderId)
             const result = await get('/order/miserorder/info',{
                 orderId
             })

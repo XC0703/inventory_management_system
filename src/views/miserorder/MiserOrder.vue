@@ -64,7 +64,7 @@
             </el-form>
             <div slot:footer class="dialog-footer" style="padding-left:0.8rem">
                 <el-button style="margin-right:0.6rem;" size="small" @click="closeDialog">取消</el-button>
-                <el-button size="small" type="primary" :loading="loading" class="title"  @click="submitForm(editForm,showOrder)">保存</el-button>
+                <el-button size="small" type="primary" :loading="loading" class="title"  @click="submitForm(editForm,showOrder);closeDialog()">保存</el-button>
             </div>
         </el-dialog>
     </el-card>

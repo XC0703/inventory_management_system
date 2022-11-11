@@ -113,9 +113,11 @@ export default {
             title: '添加',
             editFormVisible: false, //控制编辑/增加页面显示与隐藏
             editForm: { 
+                userId:'',
                 userName:'',
                 userPassword:'',
                 userPower:'',
+                createTime:''
             },
             // 编辑/增加操作时的rules表单验证
             rules: {
@@ -165,14 +167,18 @@ export default {
             this.editFormVisible = true
             if (row != undefined && row != 'undefined') {
                 this.title = '编辑'
+                this.editForm.userId = row.userId
                 this.editForm.userName = row.userName
                 this.editForm.userPassword = row.userPassword
                 this.editForm.userPower = row.userPower
+                this.editForm.createTime = formatDate(row.createTime)
             } else {
                 this.title = '添加'
+                this.editForm.userId = ''
                 this.editForm.userName = ''
                 this.editForm.userPassword = ''
                 this.editForm.userPower = ''
+                this.editForm.createTime = ''
             }
         },
         // 添加/编辑用户后进行保存

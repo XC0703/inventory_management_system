@@ -133,6 +133,7 @@ export default {
             title: '添加',
             editFormVisible: false, //控制编辑/增加页面显示与隐藏
             editForm: {
+                wareId:'',
                 wareName:'',
                 warePower:'',
                 wareCount:'',
@@ -193,15 +194,18 @@ export default {
             this.editFormVisible = true
             if (row != undefined && row != 'undefined') {
                 this.title = '编辑'
+                this.editForm.wareId = row.wareId
                 this.editForm.wareName = row.wareName
                 this.editForm.warePower = row.warePower
                 this.editForm.wareCount = row.wareCount
                 this.editForm.createTime = formatDate(row.createTime)
             } else {
                 this.title = '添加'
+                this.editForm.wareId = ''
                 this.editForm.wareName = ''
                 this.editForm.warePower = ''
                 this.editForm.wareCount = ''
+                this.editForm.createTime = ''
             }
         },
         // 添加/编辑物品后进行保存

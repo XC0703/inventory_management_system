@@ -7,6 +7,7 @@ const getUser = (query)=>{
         let tempArr = [];
         let userId = query;
         if(userId!=''){
+            console.log(userId)
             const result = await get('/user/miseruser/info',{
                 userId
             })

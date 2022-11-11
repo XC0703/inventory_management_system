@@ -7,6 +7,7 @@ const getWare = (query)=>{
         let tempArr = [];
         let wareId = query;
         if(wareId!=''){
+            console.log(wareId)
             const result = await get('/ware/miserware/info',{
                 wareId
             })
