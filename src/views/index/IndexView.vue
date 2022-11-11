@@ -39,14 +39,6 @@ export default {
       }
     })
   },
-  // 挂载前状态(里面是操作)
-  beforeMount() {
-      // 弹出登录成功
-      this.$message({
-        message: '登录成功',
-        type: 'success'
-      })
-    }
 }
 </script>
 <style lang="scss" scoped>

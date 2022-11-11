@@ -1,7 +1,9 @@
 <template>
 <div class="bgContainer">
   <div class="wrapper">
-    <img class="wrapper__img" src='http://www.dell-lee.com/imgs/vue3/user.png' />
+    <div class="logintext">
+        <h2>Welcome</h2>
+    </div>
     <div class="wrapper__input">
       <input
         class="wrapper__input__content"
@@ -26,20 +28,19 @@
     </router-link> -->
     <!-- 因此采取事件绑定的方式进行事件跳转 -->
     <div class="wrapper__login-link" @click="handleRegisterClick">立即注册</div>
-    <!-- 将信息传给ToastView组件 -->
-    <ToastView v-if="show" :message="toastMessage" />
   </div>
 </div>
 </template>
 
 <script>
+import { ElMessage } from "element-plus";
 import {reactive, toRefs} from 'vue';
 import { useRouter } from 'vue-router';
 import {post} from '../../utils/request';
-import ToastView,{useToastEffect} from '../../components/ToastView';
+// import {useToastEffect} from '../../components/ToastView';
 
 // 登录逻辑处理
-const useLoginEffect = (showToast)=>{
+const useLoginEffect = ()=>{
     // 1--我们现在是用axios自带的post方法发起请求，要求后面的URL是完整的URL，不是后端所要求的的/api/user/login，因此可以手动封装一个post方法，此处为优化1
     // 2--我们现在是用then/catch方法进行Promise的处理，如果不断地then下去，会造成回调地狱，因此可以采用Vue3支持的async/await，是then/catch的完美版，作用与then/catch相同，只是用法上的区别。
     // const handleLogin = ()=>{
@@ -56,7 +57,7 @@ const useLoginEffect = (showToast)=>{
     //     alert('失败')
     //   })
     // }
-        // 获取路由实例
+    // 获取路由实例
     const router = useRouter();
     //reactive 是 Vue3 中提供的实现响应式数据的方法。
     const data = reactive({
@@ -72,7 +73,7 @@ const useLoginEffect = (showToast)=>{
         const {username,password} = data;
         let result='';
         if(username==''||password==''){
-          showToast('请输入用户名或密码')
+          ElMessage.info('请输入用户名或密码')
           return;
         }else{
         // 每遇到一个await都会先返回,再往下执行,变成了同步操作
@@ -87,12 +88,12 @@ const useLoginEffect = (showToast)=>{
           localStorage.isLogin = true;
           // 在登录之后，通过路由实例跳转
           router.push({name:'MiserWare'})
-          showToast('登录成功')
+          ElMessage.success('登录成功')
         }else{
-          showToast('登录失败')
+          ElMessage.info('登录失败')
         }
       }catch(e){
-        showToast('请求失败')
+        ElMessage.error('登录失败')
       }
     }
     return {username,password,handleLogin}
@@ -109,16 +110,14 @@ const useRegisterEffect = ()=>{
 }
 export default {
   name: 'LoginView',
-  components:{ToastView},
   // setup函数的职责：告诉你代码执行的一个流程
   setup(){
 
-    const {show,toastMessage,showToast} = useToastEffect()
-    const { username,password,handleLogin } = useLoginEffect(showToast)
+    const { username,password,handleLogin } = useLoginEffect()
     const {handleRegisterClick} = useRegisterEffect();
 
     return { 
-      show,toastMessage,username,password,
+      username,password,
       handleLogin,handleRegisterClick
     }
   }
@@ -136,20 +135,23 @@ export default {
 }
 .wrapper {
   background-color: rgba(0, 0, 0, .1);
-  width:5rem;
+  width:4.5rem;
   position: absolute;
-  top: 35%;
+  top: 27%;
   left:50%;
-  margin-left: -2.5rem;
+  margin-left: -2.25rem;
   transform: translateY(-50%);
-  &__img {
-    display: block;
-    margin: 0.15rem auto .4rem auto;
-    width: .66rem;
-    height: .66rem;
+  .logintext {
+    margin-bottom: 0.2rem;
+    line-height: 0.5rem;
+    text-align: center;
+    font-size: 0.3rem;
+    font-weight: bolder;
+    color: white;
+    text-shadow: 0.02rem 0.02rem 0.04rem #000000;
   }
   &__input {
-    height: .48rem;
+    height: .3rem;
     margin: 0 .4rem .16rem .4rem;
     padding: 0 .16rem;
     background: #F9F9F9;
@@ -157,11 +159,12 @@ export default {
     border-radius: .06rem;
     border-radius: .06rem;
     &__content {
-      line-height: .48rem;
+      line-height: .28rem;
       border: none;
       outline: none;
       width: 100%;
       background: none;
+      margin:0 auto;
       font-size: .16rem;
       color: $content-notice-fontColor;
       &::placeholder {
@@ -171,7 +174,7 @@ export default {
   }
   &__login-button {
     margin: .32rem .4rem .16rem .4rem;
-    line-height: .48rem;
+    line-height: .3rem;
     background: #0091FF;
     box-shadow: 0 .04rem .08rem 0 rgba(0,145,255,0.32);
     border-radius: .04rem;

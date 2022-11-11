@@ -1,7 +1,9 @@
 <template>
 <div class="bgContainer">
   <div class="wrapper">
-    <img class="wrapper__img" src="http://www.dell-lee.com/imgs/vue3/user.png"/>
+    <div class="logintext">
+        <h2>Welcome</h2>
+    </div>
     <div class="wrapper__input">
       <input
         class="wrapper__input__content"
@@ -28,19 +30,18 @@
     </div>
     <div class="wrapper__register-button" @click="handleRegister">注册</div>
     <div class="wrapper__register-link" @click="handleLoginClick">已有账号去登陆</div>
-    <ToastView v-if="show" :message="toastMessage" />
   </div>
 </div>
 </template>
 
 <script>
+import { ElMessage } from "element-plus";
 import { useRouter } from 'vue-router';
 import {reactive, toRefs} from 'vue';
 import {post} from '../../utils/request';
-import ToastView,{useToastEffect} from '../../components/ToastView';
 
 // 注册逻辑处理
-const useRegisterEffect = (showToast)=>{
+const useRegisterEffect = ()=>{
     // 获取路由实例
     const router = useRouter();
     //reactive 是 Vue3 中提供的实现响应式数据的方法。
@@ -58,7 +59,7 @@ const useRegisterEffect = (showToast)=>{
         const {username,password,ensurement} = data;
         let result='';
         if(username==''||password==''||ensurement==''){
-          showToast('请输入用户名或密码')
+          ElMessage.info('请输入用户名或密码')
           return;
         }else{
         // 每遇到一个await都会先返回,再往下执行,变成了同步操作
@@ -72,12 +73,12 @@ const useRegisterEffect = (showToast)=>{
         // 代码会尝试查找errno，如果查找不到，会返回undefined，而不会报错
         if(result?.errno===0){
           router.push({name:'LoginView'})
-          showToast('注册成功')
+          ElMessage.success('注册成功')
         }else{
-          showToast('注册失败')
+          ElMessage.error('注册失败')
         }
       }catch(e){
-        showToast('请求失败')
+        ElMessage.error('注册失败')
       }
     }
     return {username,password,ensurement,handleRegister}
@@ -93,16 +94,14 @@ const useLoginEffect = ()=>{
 }
 export default {
   name: 'RegisterView',
-  components:{ToastView},
   // setup函数的职责：告诉你代码执行的一个流程
   setup() {
 
-    const {show,toastMessage,showToast} = useToastEffect()
-    const {username,password,ensurement,handleRegister} = useRegisterEffect(showToast);
+    const {username,password,ensurement,handleRegister} = useRegisterEffect();
     const {handleLoginClick} = useLoginEffect();
 
     return {
-      username,password,ensurement,show,toastMessage,
+      username,password,ensurement,
       handleRegister,handleLoginClick
     }
   }
@@ -120,20 +119,23 @@ export default {
 }
 .wrapper {
   background-color: rgba(0, 0, 0, .1);
-  width:5rem;
+  width:4.5rem;
   position: absolute;
-  top: 35%;
+  top: 30%;
   left:50%;
-  margin-left: -2.5rem;
+  margin-left: -2.25rem;
   transform: translateY(-50%);
-  &__img {
-    display: block;
-    margin: 0.15rem auto .4rem auto;
-    width: .66rem;
-    height: .66rem;
+  .logintext {
+    margin-bottom: 0.2rem;
+    line-height: 0.5rem;
+    text-align: center;
+    font-size: 0.3rem;
+    font-weight: bolder;
+    color: white;
+    text-shadow: 0.02rem 0.02rem 0.04rem #000000;
   }
   &__input {
-    height: .48rem;
+    height: .3rem;
     margin: 0 .4rem .16rem .4rem;
     padding: 0 .16rem;
     background: #F9F9F9;
@@ -141,7 +143,7 @@ export default {
     border-radius: .06rem;
     border-radius: .06rem;
     &__content {
-      line-height: .48rem;
+      line-height: .28rem;
       border: none;
       outline: none;
       width: 100%;
@@ -155,7 +157,7 @@ export default {
   }
   &__register-button {
     margin: .32rem .4rem .16rem .4rem;
-    line-height: .48rem;
+    line-height: .3rem;
     background: $btn-bgColor;
     box-shadow: 0 .04rem .08rem 0 rgba(0,145,255,0.32);
     border-radius: .04rem;
