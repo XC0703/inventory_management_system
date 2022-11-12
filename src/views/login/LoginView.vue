@@ -1,27 +1,35 @@
 <template>
 <div class="bgContainer">
   <div class="wrapper">
-    <div class="logintext">
+    <div class="wrapper__logintext">
         <h2>Welcome</h2>
     </div>
     <div class="wrapper__input">
-      <input
-        class="wrapper__input__content"
-        placeholder="用户名"
-        v-model="username"
-      />
+        <el-form ref="form" :model="form" :rules="rules">
+          <el-form-item prop="userName">
+            <el-input
+              v-model="form.userName"
+              clearable
+              placeholder="请输入用户名"
+            ></el-input>
+          </el-form-item>
+          <el-form-item prop="passWord">
+            <el-input
+              v-model="form.passWord"
+              clearable
+              placeholder="请输入密码"
+              show-passWord
+            ></el-input>
+          </el-form-item>
+        </el-form>
     </div>
-    <!-- autocomplete="new-password"是为了防止自动填充密码 -->
-    <div class="wrapper__input">
-      <input
-        type="password"
-        class="wrapper__input__content"
-        placeholder="请输入密码"
-        v-model="password"
-        autocomplete="new-password"
-      />
+    <div class="wrapper__tool">
+        <div class="wrapper__tool__remenberTool">
+          <el-checkbox v-model="checked" @change="remenber" style="color:#fff;">记住密码</el-checkbox>
+        </div>
+        <div class="wrapper__tool__forgetpasTool" @click="forgetpas">忘记密码？</div>
     </div>
-    <div class="wrapper__login-button" @click="handleLogin">登陆</div>
+    <div class="wrapper__login-button" @click=handleLogin(form)>登录</div>
     <!-- 像这样通过router-link :to跳转，会在外层自动包裹一个a标签 -->
     <!-- <router-link :to="{name:'RegisterView'}">
       <div class="wrapper__login-link">立即注册</div>
@@ -33,99 +41,95 @@
 </template>
 
 <script>
-import { ElMessage } from "element-plus";
-import {reactive, toRefs} from 'vue';
-import { useRouter } from 'vue-router';
+import router from '@/router'
 import {post} from '../../utils/request';
-// import {useToastEffect} from '../../components/ToastView';
 
-// 登录逻辑处理
-const useLoginEffect = ()=>{
-    // 1--我们现在是用axios自带的post方法发起请求，要求后面的URL是完整的URL，不是后端所要求的的/api/user/login，因此可以手动封装一个post方法，此处为优化1
-    // 2--我们现在是用then/catch方法进行Promise的处理，如果不断地then下去，会造成回调地狱，因此可以采用Vue3支持的async/await，是then/catch的完美版，作用与then/catch相同，只是用法上的区别。
-    // const handleLogin = ()=>{
-    //   // 设置登录状态
-    //   axios.post('https://www.fastmock.site/mock/ae8e9031947a302fed5f92425995aa19/jd/api/user/login',{
-    //     username:data.username,
-    //     password:data.password
-    //   }).then(()=>{
-    //     localStorage.isLogin = true;
-    //     // 在登录之后，通过路由实例跳转
-    //     router.push({name:'Home'})
-    //     alert('成功')
-    //   }).catch(()=>{
-    //     alert('失败')
-    //   })
-    // }
-    // 获取路由实例
-    const router = useRouter();
-    //reactive 是 Vue3 中提供的实现响应式数据的方法。
-    const data = reactive({
-      username:'',
-      password:'',
-    })//到这里setup()函数只能导出data
-    // toRefs 用于将响应式对象转换为结果对象，其中结果对象的每个属性都是指向原始对象相应属性的ref
-    const {username,password} = toRefs(data);//到这里setup()函数可以导出username和password
-    const handleLogin = async()=>{
-      // 可以使用try/catch监听Promise 返回状态，try为成功，catch失败
+export default {
+  name: 'LoginView',
+  data(){
+    return{
+      form: {
+        userName: "",
+        passWord: "",
+      },
+      rules: {
+        userName: [{ required: true, message: "请输入用户名", trigger: "blur" }],
+        passWord: [{ required: true, message: "请输入密码", trigger: "blur" },],
+      },
+      checked: false,
+    }
+  },
+  mounted() {
+      if(localStorage.getItem("news")){
+        this.form=JSON.parse(localStorage.getItem("news"))
+        this.checked=true
+      }
+  },
+  methods:{
+    async handleLogin(form){
       try{
-        // 设置登录状态
-        const {username,password} = data;
         let result='';
-        if(username==''||password==''){
-          ElMessage.info('请输入用户名或密码')
+        let submitData = {
+          userId:'',
+          userName:'',
+          userPassword:'',
+          userPower:'',
+          createTime:'',
+          updateTime:''
+        };
+        if(form.userName==''||form.passWord==''){
+          this.$message.info('请输入用户名或密码')
           return;
         }else{
-        // 每遇到一个await都会先返回,再往下执行,变成了同步操作
-        result = await post('/api/user/login',{
-          username:data.username,
-          password:data.password
-        })
+          submitData.userId = '后端处理userId',
+          submitData.userName = form.userName,
+          submitData.userPassword = form.passWord,
+          submitData.userPower = '后端处理userPower',
+          submitData.createTime = '后端处理createTime',
+          submitData.updateTime = '后端处理updateTime',
+          // 每遇到一个await都会先返回,再往下执行,变成了同步操作
+          result = await post('/api/user/login',{
+            userName:form.userName,
+            passWord:form.passWord
+          })
         }
         // result?.data?.errno的意思是尝试获取result中的data中的error属性，它和result.data.errno的意思是一样的，但是比result.data.errno的容错性更高。
         // 代码会尝试查找errno，如果查找不到，会返回undefined，而不会报错
         if(result?.errno===0){
+          console.log(submitData)
           localStorage.isLogin = true;
           // 在登录之后，通过路由实例跳转
           router.push({name:'MiserWare'})
-          ElMessage.success('登录成功')
+          this.$message.success('登录成功')
         }else{
-          ElMessage.info('登录失败')
+          this.$message.error('登录失败')
         }
       }catch(e){
-        ElMessage.error('登录失败')
+        this.$message.error('登录失败')
       }
-    }
-    return {username,password,handleLogin}
-}
-// 跳转到注册页面逻辑处理
-const useRegisterEffect = ()=>{
-    // 获取路由实例
-    const router = useRouter();
-    const handleRegisterClick = () =>{
-      // 在登录之后，通过路由实例跳转
+    },
+    async handleRegisterClick(){
       router.push({name:'RegisterView'})
-    }
-    return {handleRegisterClick}
-}
-export default {
-  name: 'LoginView',
-  // setup函数的职责：告诉你代码执行的一个流程
-  setup(){
-
-    const { username,password,handleLogin } = useLoginEffect()
-    const {handleRegisterClick} = useRegisterEffect();
-
-    return { 
-      username,password,
-      handleLogin,handleRegisterClick
+      this.$message.info("系统默认注册低权限管理员，若想提高权限，请联系高级管理员")
+    },
+    // 记住密码
+    remenber(data){
+      this.checked=data
+      if(this.checked){
+          localStorage.setItem("news",JSON.stringify(this.form))
+      }else{
+        localStorage.removeItem("news")
+      }
+    },
+    // 忘记密码
+    forgetpas(){
+      this.$message.info('请联系高级管理员或系统开发者进行密码修改')
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-@import '../../style/viriables.scss';
 .bgContainer{
   width:100%;
   height: 100vh;
@@ -141,54 +145,56 @@ export default {
   left:50%;
   margin-left: -2.25rem;
   transform: translateY(-50%);
-  .logintext {
+  &__logintext {
     margin-bottom: 0.2rem;
     line-height: 0.5rem;
     text-align: center;
     font-size: 0.3rem;
     font-weight: bolder;
-    color: white;
+    color: #fff;
     text-shadow: 0.02rem 0.02rem 0.04rem #000000;
   }
   &__input {
+    width: 3.8rem;
+    transform: translate(-50%);
+    margin-left: 50%;
+  }
+  &__tool{
+    width: 3.8rem;
     height: .3rem;
-    margin: 0 .4rem .16rem .4rem;
-    padding: 0 .16rem;
-    background: #F9F9F9;
-    border: .01rem solid rgba(0,0,0,0.10);
-    border-radius: .06rem;
-    border-radius: .06rem;
-    &__content {
-      line-height: .28rem;
-      border: none;
-      outline: none;
-      width: 100%;
-      background: none;
-      margin:0 auto;
-      font-size: .16rem;
-      color: $content-notice-fontColor;
-      &::placeholder {
-        color: $content-notice-fontColor;
-      }
+    margin:0 auto;
+    color:#fff;
+    &__remenberTool{
+      height: .3rem;
+      float:left;
+    }
+    &__forgetpasTool{
+      height: .3rem;
+      line-height: .3rem;
+      font-size: .14rem;
+      float:right;
+      cursor: pointer;
     }
   }
   &__login-button {
-    margin: .32rem .4rem .16rem .4rem;
+    margin: .14rem 1.4rem .16rem 1.4rem;
     line-height: .3rem;
     background: #0091FF;
     box-shadow: 0 .04rem .08rem 0 rgba(0,145,255,0.32);
     border-radius: .04rem;
     border-radius: .04rem;
-    color: $bgColor;
+    color: #fff;
     font-size: .16rem;
     text-align: center;
+    letter-spacing:.4rem;
+    text-indent: .4rem;
     cursor: pointer;
   }
   &__login-link {
+    margin:0 1.4rem 0.15rem 1.4rem;
     text-align: center;
     font-size: .14rem;
-    margin-bottom: 0.15rem;
-    color: $content-notice-fontColor;
+    color: #999;
     cursor: pointer;
   }
 }
