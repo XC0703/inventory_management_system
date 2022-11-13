@@ -29,6 +29,11 @@ const routes = [
             name:'MiserWare',
             component:()=>import(/* webpackChunName:"misercart" */ '../views/miserware/MiserWare')
         },
+        {
+            path:'dataVis',
+            name:'DataVis',
+            component:()=>import(/* webpackChunName:"misercart" */ '../views/dataVis/DataVis')
+        },
     ]
 },
 {

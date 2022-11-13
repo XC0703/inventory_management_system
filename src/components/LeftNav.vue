@@ -53,6 +53,13 @@ export default {
             url: 'miseruser',
             menus: null
           },
+          {
+            menuid: 4,
+            icon: 'icon-shujukeshihua',
+            menuname: '数据可视化',
+            url: 'dataVis',
+            menus: null
+          },
         ],
         msg: 'success'
     }

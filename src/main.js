@@ -10,6 +10,10 @@ import mitt from 'mitt'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 
 const app = createApp(App)
+
+// 引入echarts
+import * as echarts from 'echarts'
+app.config.globalProperties.$echarts = echarts
 // app.use(store);
 app.use(router);
 app.config.globalProperties.$bus = new mitt() // event Bus 用于无关系组件间的通信
