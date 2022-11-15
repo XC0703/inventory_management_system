@@ -78,13 +78,10 @@
 
 <script>
 import tableSortChange from '../../utils/tableSortChange'
-import PaginateView from '../../components/PaginateView'
-import getUser from './getUser'
-import {singleDelete,batchDelete} from './deleteUser'
-import submitForm from './editUser'
-import handleExport from './exportUser'
 import {formatDate} from '../../utils/timeEffect'
-import simulateDataList from './simulateDataList.json'
+import PaginateView from '../../components/PaginateView'
+import {getUser,singleDelete,batchDelete,submitForm,handleExport} from './userEffect'
+import simulateDataList from '@/assets/simulateData/dataUser.json'
 export default {
     name:'MiserUser',
     components:{PaginateView},

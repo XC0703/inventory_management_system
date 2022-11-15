@@ -87,6 +87,8 @@ export default {
           submitData.userPower = '后端处理userPower',
           submitData.createTime = '后端处理createTime',
           submitData.updateTime = '后端处理updateTime',
+          console.log("请求路由：/auth/miserauth/login")
+          console.log(submitData)
           // 每遇到一个await都会先返回,再往下执行,变成了同步操作
           result = await post('/api/user/login',{
             userName:form.userName,
@@ -96,7 +98,6 @@ export default {
         // result?.data?.errno的意思是尝试获取result中的data中的error属性，它和result.data.errno的意思是一样的，但是比result.data.errno的容错性更高。
         // 代码会尝试查找errno，如果查找不到，会返回undefined，而不会报错
         if(result?.errno===0){
-          console.log(submitData)
           localStorage.isLogin = true;
           // 在登录之后，通过路由实例跳转
           router.push({name:'MiserWare'})

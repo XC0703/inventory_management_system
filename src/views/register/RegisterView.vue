@@ -83,6 +83,7 @@
             submitData.userPower = '默认注册低权限用户',
             submitData.createTime = '后端处理createTime',
             submitData.updateTime = '后端处理updateTime',
+            console.log("请求路由：/auth/miserauth/register")
             console.log(submitData)
             // 每遇到一个await都会先返回,再往下执行,变成了同步操作
             result = await post('/auth/miserauth/register',submitData)

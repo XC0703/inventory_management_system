@@ -22,13 +22,15 @@
             <div class="cardContainer__menuBox" @mouseover="handleSelect(true)" @mouseleave="selectHover=false" v-if="selectHover==true">
                 <div class="cardContainer__menuBox__menu" @click="handleCurChart(1)">公司近十年每年总销售额变化图</div>
                 <div class="cardContainer__menuBox__menu" @click="handleCurChart(2)">公司某年每月销售额展示</div>
-                <div class="cardContainer__menuBox__menu" @click="handleCurChart(3)">公司某年每种物品销售数量的占比</div>
+                <div class="cardContainer__menuBox__menu" @click="handleCurChart(3)">公司某年每种物品销售额的占比</div>
             </div>
         </el-card>
     </div>
 </template>
 
 <script>
+import {get} from '../../utils/request';
+import { ElMessage } from "element-plus";
 import firstChart from './firstChart'
 import secondChart from './secondChart'
 import thirdChart from './thirdChart'
@@ -40,6 +42,9 @@ export default {
             timer:null,
             currentChart:1
         }
+    },
+    mounted(){
+        this.getSalesData()
     },
     methods:{
         handleSelect(flag){
@@ -55,6 +60,19 @@ export default {
         },
         handleCurChart(num){
             this.currentChart = num;
+        },
+        async getSalesData(){
+            console.log("请求路由：/misersales/list")
+            const result = await get('/misersales/list')
+            .then(()=>{
+                // console.log(result)
+                if (result?.msg === "success" && result?.page?.list) {
+                    console.log("获取到数据")
+                }
+            })
+            .catch(()=>{
+                ElMessage.error("未获取到数据！");
+            })
         }
     },
     components:{firstChart,secondChart,thirdChart}

@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import data_pie from './data_thirdChart.json'
+import data_pie from '@/assets/simulateData/data_thirdChart.json'
 let echarts = require("echarts/lib/echarts");
 
 export default {
@@ -68,43 +68,43 @@ export default {
                     },
                     options: [
                         {
-                            title:{text:'2012年每种物品销售数量的占比'},
+                            title:{text:'2012年每种物品销售额的占比'},
                             series:{data: data_pie[0]}
                         },
                         {
-                            title:{text:'2013年每种物品销售数量的占比'},
+                            title:{text:'2013年每种物品销售额的占比'},
                             series:{data: data_pie[1]}
                         },
                         {
-                            title:{text:'2014年每种物品销售数量的占比'},
+                            title:{text:'2014年每种物品销售额的占比'},
                             series:{data: data_pie[2]}
                         },
                         {
-                            title:{text:'2015年每种物品销售数量的占比'},
+                            title:{text:'2015年每种物品销售额的占比'},
                             series:{data: data_pie[3],}
                         },
                         {
-                            title:{text:'2016年每种物品销售数量的占比'},
+                            title:{text:'2016年每种物品销售额的占比'},
                             series:{data: data_pie[4]}
                         },
                         {
-                            title:{text:'2017年每种物品销售数量的占比'},
+                            title:{text:'2017年每种物品销售额的占比'},
                             series:{data: data_pie[5]}
                         },
                         {
-                            title:{text:'2018年每种物品销售数量的占比'},
+                            title:{text:'2018年每种物品销售额的占比'},
                             series:{data: data_pie[6]}
                         },
                         {
-                            title:{text:'2019年每种物品销售数量的占比'},
+                            title:{text:'2019年每种物品销售额的占比'},
                             series:{data: data_pie[7]}
                         },
                         {
-                            title:{text:'2020年每种物品销售数量的占比'},
+                            title:{text:'2020年每种物品销售额的占比'},
                             series:{data: data_pie[8]}
                         },
                         {
-                            title:{text:'2021年每种物品销售数量的占比'},
+                            title:{text:'2021年每种物品销售额的占比'},
                             series:{data: data_pie[9]}
                         }
                     ]

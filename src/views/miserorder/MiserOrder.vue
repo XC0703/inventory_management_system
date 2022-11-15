@@ -30,56 +30,34 @@
                     </el-button>
             </el-col>
         </el-row>
-        <!-- 用户列表区域  -->
+        <!-- 订单列表区域  -->
         <el-table height='3.2rem' @sort-change="sortChange" @selection-change="selsChange" :data="orderList.slice((pageparm.currentPage - 1) * pageparm.pageSize, pageparm.currentPage * pageparm.pageSize)"  v-loading="loading" border element-loading-text="拼命加载中" stripe style="margin:0.15rem 0rem 0.15rem 0rem;max-height: 3.2rem;">
             <el-table-column align="center" type="selection" width="60"></el-table-column>
             <el-table-column align="center" label="订单id" prop="orderId" :show-overflow-tooltip='true' min-width="85"></el-table-column>
-            <el-table-column align="center" label="用户id" prop="userId" :show-overflow-tooltip='true' min-width="85"></el-table-column>
-            <el-table-column align="center" label="用户名称" prop="userName" :show-overflow-tooltip='true' min-width="100"></el-table-column>
+            <el-table-column align="center" label="负责人id" prop="userId" :show-overflow-tooltip='true' min-width="85"></el-table-column>
+            <el-table-column align="center" label="负责人名称" prop="userName" :show-overflow-tooltip='true' min-width="100"></el-table-column>
             <el-table-column align="center" label="物品id" prop="wareId" :show-overflow-tooltip='true' min-width="85"></el-table-column>
             <el-table-column align="center" label="物品名称" prop="wareName" :show-overflow-tooltip='true' min-width="100"></el-table-column>
             <el-table-column align="center" label="物品数量" prop="wareCount" :show-overflow-tooltip='true' min-width="100" sortable="custom"></el-table-column>
             <el-table-column align="center" label="创建时间" prop="createTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
-            <el-table-column align="center" label="操作" min-width="140">
+            <el-table-column align="center" label="操作" min-width="100">
                 <template #default="scope">
-                    <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                     <el-button size="small" type="danger" @click="singleDelete(scope.$index, scope.row,showOrder)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
         <!-- 分页组件 -->
         <PaginateView v-bind:child-msg="pageparm" @callFather="callFather"></PaginateView>
-        <!-- 编辑界面 -->
-        <el-dialog title="编辑" v-model="editFormVisible" width="30%" :before-close="closeDialog">
-            <el-form label-width="1.2rem" :model="editForm" :rules="rules" ref="editForm">
-                <el-form-item label="用户名称" prop="userName">
-                <el-input size="small" v-model="editForm.userName" auto-complete="off" placeholder="请输入用户名称"></el-input>
-                </el-form-item>
-                <el-form-item label="物品名称" prop="wareName">
-                <el-input size="small" v-model="editForm.wareName" auto-complete="off" placeholder="请输入物品名称"></el-input>
-                </el-form-item>
-                <el-form-item label="物品数量" prop="wareCount">
-                <el-input size="small" v-model.number="editForm.wareCount" auto-complete="off" placeholder="请输入物品数量"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot:footer class="dialog-footer" style="padding-left:0.8rem">
-                <el-button style="margin-right:0.6rem;" size="small" @click="closeDialog">取消</el-button>
-                <el-button size="small" type="primary" :loading="loading" class="title"  @click="submitForm(editForm,showOrder);closeDialog()">保存</el-button>
-            </div>
-        </el-dialog>
     </el-card>
 </div>
 </template>
 
 <script >
 import tableSortChange from '../../utils/tableSortChange'
-import PaginateView from '../../components/PaginateView'
-import getOrder from './getOrder'
-import {singleDelete,batchDelete} from './deleteOrder'
-import submitForm from './editOrder'
-import handleExport from './exportOrder'
 import {formatDate} from '../../utils/timeEffect'
-import simulateDataList from './simulateDataList.json'
+import PaginateView from '../../components/PaginateView'
+import { getOrder,handleExport,singleDelete,batchDelete } from './orderEffect'
+import simulateDataList from '@/assets/simulateData/dataOrder.json'
 export default {
     name:'MiserOrder',
     components:{PaginateView},
@@ -104,23 +82,6 @@ export default {
                 column:'',
                 // 页面此时需要展示的订单列表
                 orderList: [],
-                // 编辑操作需要的参数
-                editFormVisible: false, //控制编辑页面显示与隐藏
-                editForm: {
-                    orderId:'',
-                    userId:'',
-                    userName:'',
-                    wareId:'',
-                    wareName:'',
-                    wareCount:'',
-                    createTime:''
-                },
-                // 编辑订单时的rules表单验证
-                rules: {
-                    userName:[{ required: true, message: '请输入用户名称', trigger: 'blur' }],
-                    wareName: [{ required: true, message: '请输入物品名称', trigger: 'blur' }],
-                    wareCount:[{ required: true, message: '请输入物品数量', trigger: 'blur' },{ type:'number',message:'必须是数字',trigger: 'blur' }]
-                },
                 //选中的值显示--用于批量删除
                 sels: []
         }
@@ -157,23 +118,6 @@ export default {
         // 删除有关函数
         singleDelete,
         batchDelete,
-        // 编辑
-        async handleEdit(index, row){
-            this.query='' //编辑之前记得清空搜索栏
-            this.editFormVisible = true
-            console.log(row)
-            if (row != undefined && row != 'undefined') {
-                this.editForm.orderId = row.orderId
-                this.editForm.userId = row.userId
-                this.editForm.userName = row.userName
-                this.editForm.wareId = row.wareId
-                this.editForm.wareName = row.wareName
-                this.editForm.wareCount = row.wareCount
-                this.editForm.createTime = formatDate(row.createTime)
-            }
-        },
-        // 编辑订单后进行保存
-        submitForm,
         // 关闭编辑弹出框
         closeDialog() {
             this.editFormVisible = false
