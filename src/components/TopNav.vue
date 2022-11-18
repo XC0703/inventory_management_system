@@ -26,6 +26,8 @@
 </template>
 <script>
 import { useRouter } from 'vue-router'
+import {post} from '../utils/request';
+import { ElMessage } from "element-plus";
 export default {
   name: 'TopNav',
   data() {
@@ -38,9 +40,20 @@ export default {
   },
   setup() {
     const router = useRouter()
-    const handleLogout = () => {
-        localStorage.removeItem('isLogin')
-        router.replace({ name: 'LoginView'})
+    const handleLogout = async() => {
+      try{
+        // console.log("请求路由：/auth/miserauth/loginout")
+          const result = await post(`/auth/miserauth/loginout`)
+          if (result?.msg === "success") {
+            ElMessage.success("已成功退出！");
+            localStorage.removeItem('isLogin')
+          router.replace({ name: 'LoginView'})
+          }else{
+            ElMessage.error("请重试！");
+          }
+      }catch{
+          ElMessage.error("请重试！");
+      }
     }
     return { handleLogout }
   },
@@ -61,13 +74,7 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          setTimeout(() => {
-            this.handleLogout();
-            this.$message({
-              type: 'success',
-              message: '已退出登录!'
-            })
-          }, 1000)
+          this.handleLogout();
         }).catch(() => {
           this.$message({
             type: 'info',

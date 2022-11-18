@@ -62,17 +62,17 @@ export default {
             this.currentChart = num;
         },
         async getSalesData(){
-            console.log("请求路由：/misersales/list")
-            const result = await get('/misersales/list')
-            .then(()=>{
-                // console.log(result)
+            // console.log("请求路由：/misersales/list")
+            try{
+                const result = await get('/misersales/list')
                 if (result?.msg === "success" && result?.page?.list) {
                     console.log("获取到数据")
+                }else{
+                    ElMessage.error("未获取到数据！");
                 }
-            })
-            .catch(()=>{
+            }catch{
                 ElMessage.error("未获取到数据！");
-            })
+            }
         }
     },
     components:{firstChart,secondChart,thirdChart}

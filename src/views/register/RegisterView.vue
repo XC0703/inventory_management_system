@@ -89,9 +89,7 @@
             result = await post('/auth/miserauth/register',submitData)
             // result?.data?.errno的意思是尝试获取result中的data中的error属性，它和result.data.errno的意思是一样的，但是比result.data.errno的容错性更高。
             // 代码会尝试查找errno，如果查找不到，会返回undefined，而不会报错
-            if(result?.errno===0){
-              console.log(submitData)
-              localStorage.isLogin = true;
+            if(result?.msg === "success"){
               // 在注册之后，通过路由实例跳转
               router.push({name:'LoginView'})
               this.$message.success('注册成功')

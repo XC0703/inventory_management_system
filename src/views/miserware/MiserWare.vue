@@ -37,7 +37,7 @@
             </el-col>
         </el-row>
         <!-- 物品列表区域  -->
-        <el-table height='3.2rem' @sort-change="sortChange" @selection-change="selsChange" :data="wareList.slice((pageparm.currentPage - 1) * pageparm.pageSize, pageparm.currentPage * pageparm.pageSize)"  v-loading="loading" border element-loading-text="拼命加载中" stripe style="margin:0.15rem 0rem 0.15rem 0rem;max-height: 3.2rem;">
+        <el-table height='3.2rem' @sort-change="sortChange" @selection-change="selsChange" :data="wareList.slice((pageparm.currentPage - 1) * pageparm.pageSize, pageparm.currentPage * pageparm.pageSize)"  v-loading="loading" bware element-loading-text="拼命加载中" stripe style="margin:0.15rem 0rem 0.15rem 0rem;max-height: 3.2rem;">
             <el-table-column align="center" type="selection" width="60"></el-table-column>
             <el-table-column align="center" label="物品id" prop="wareId" :show-overflow-tooltip='true' min-width="70"></el-table-column>
             <el-table-column align="center" label="物品名称" prop="wareName" :show-overflow-tooltip='true' min-width="120"></el-table-column>
@@ -48,7 +48,7 @@
             <el-table-column align="center" label="操作" min-width="175">
                 <template #default="scope">
                     <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                    <el-button size="small" type="primary" @click="handleAddOrder(scope.$index, scope.row)">交易</el-button>
+                    <el-button size="small" type="primary" @click="handleAddware(scope.$index, scope.row)">交易</el-button>
                     <el-button size="small" type="danger" @click="singleDelete(scope.$index, scope.row,showWare)">删除</el-button>
                 </template>
             </el-table-column>
@@ -74,21 +74,21 @@
             </div>
         </el-dialog>
         <!-- 订单交易页面 -->
-        <el-dialog title="交易" v-model="addOrderVisible" width="30%" :before-close="closeOrderDialog">
-            <el-form label-width="1.2rem" :model="addOrder" ref="addOrder">
+        <el-dialog title="交易" v-model="addwareVisible" width="30%" :before-close="closewareDialog">
+            <el-form label-width="1.2rem" :model="addware" ref="addware">
                 <el-form-item label="物品id" prop="wareId">
-                <el-input size="small" v-model="addOrder.wareId" auto-complete="off" :disabled="true"></el-input>
+                <el-input size="small" v-model="addware.wareId" auto-complete="off" :disabled="true"></el-input>
                 </el-form-item>
                 <el-form-item label="物品名称" prop="wareName">
-                <el-input size="small" v-model="addOrder.wareName" auto-complete="off" :disabled="true"></el-input>
+                <el-input size="small" v-model="addware.wareName" auto-complete="off" :disabled="true"></el-input>
                 </el-form-item>
                 <el-form-item label="物品数量" prop="wareCount">
-                    <el-input-number v-model="addOrder.wareCount" size="small" :min="1" />
+                    <el-input-number v-model="addware.wareCount" size="small" :min="1" />
                 </el-form-item>
             </el-form>
             <div slot:footer class="dialog-footer" style="padding-left:0.5rem">
-                <el-button  size="small" type="primary" style="margin-right:0.4rem" @click="submitOrder(addOrder,'cart');closeOrderDialog()">加入临时订单</el-button>
-                <el-button size="small" type="primary" :loading="loading" @click="submitOrder(addOrder,'order');closeOrderDialog()">直接加入订单</el-button>
+                <el-button  size="small" type="primary" style="margin-right:0.4rem" @click="submitOrder(addware,'cart');closewareDialog()">加入临时订单</el-button>
+                <el-button size="small" type="primary" :loading="loading" @click="submitOrder(addware,'order',showWare);closewareDialog()">直接加入订单</el-button>
             </div>
         </el-dialog>
     </el-card>
@@ -98,8 +98,9 @@
 <script >
 import tableSortChange from '../../utils/tableSortChange'
 import {formatDate} from '../../utils/timeEffect'
+import {get} from '../../utils/request';
 import PaginateView from '../../components/PaginateView'
-import {getWare,singleDelete,batchDelete,submitForm,handleExport} from './wareEffect'
+import {singleDelete,batchDelete,submitForm,handleExport} from './wareEffect'
 import submitOrder from './addOrderOrCart'
 import simulateDataList from '@/assets/simulateData/dataWare.json'
 export default {
@@ -143,8 +144,8 @@ export default {
                 wareCount:[{ required: true, message: '请输入库存数量', trigger: 'blur' },{ type:'number',message:'必须是数字',trigger: 'blur' }]
             },
             // 交易操作时需要的参数
-            addOrderVisible: false, //控制添加订单页面显示与隐藏
-            addOrder:{
+            addwareVisible: false, //控制添加订单页面显示与隐藏
+            addware:{
                 wareId:'',
                 wareName:'',
                 wareCount:0
@@ -154,8 +155,8 @@ export default {
         }
     },
     created () {
-        this.getWareList()
-        // this.showWare()
+        // this.getWareList()
+        this.showWare()
     },
     methods: {
         // 模拟的全部物品列表
@@ -169,10 +170,38 @@ export default {
             this.pageparm.pageSize = this.formInline.limit
             this.pageparm.total =  this.wareList.length
         },
+        // 获取物品列表（包括全部与单个两种情况）
+        async getWare(query){
+            this.wareList = [];
+            if(query!=''){
+                // console.log("请求路由：/ware/miserware/info/ware000001")
+                try{
+                    const result = await get(`/ware/miserware/info/${query}`)
+                    if (result?.msg === "success"&& result?.miserWare) {
+                        this.wareList.push(result.miserWare) //获取到数据
+                    }else{
+                        this.$message.error("未获取到数据，请重新输入！");
+                    }
+                }catch{
+                    this.$message.error("未获取到数据，请重新输入！");
+                }
+            }else{
+                try{
+                    // console.log("请求路由：/ware/miserware/list")
+                    const result = await get('/ware/miserware/list')
+                    if (result?.msg === "success" && result?.page?.list) {
+                        this.wareList = result.page.list
+                    }else{
+                        this.$message.error("未获取到数据，请重新获取！");
+                    }
+                }catch{
+                    this.$message.error("未获取到数据，请重新获取！");
+                }
+            }
+        },
         // 展示查询数据
         async showWare(){
-            // 将接口获取的数据进行处理
-            this.wareList = JSON.parse(JSON.stringify(getWare(this.query)));
+            this.getWare(this.query);
             this.loading = false
             this.pageparm.currentPage = this.formInline.page
             this.pageparm.pageSize = this.formInline.limit
@@ -213,23 +242,23 @@ export default {
             this.$refs.editForm.resetFields();
         },
         // 交易操作
-        async handleAddOrder(index,row){
-            this.addOrderVisible = true
-            this.addOrder.wareId = row.wareId
-            this.addOrder.wareName = row.wareName
-            this.addOrder.wareCount = 0
+        async handleAddware(index,row){
+            this.addwareVisible = true
+            this.addware.wareId = row.wareId
+            this.addware.wareName = row.wareName
+            this.addware.wareCount = 0
         },
         submitOrder,
-        closeOrderDialog(){
-            this.addOrderVisible = false
-            this.$refs.addOrder.resetFields();
+        closewareDialog(){
+            this.addwareVisible = false
+            this.$refs.addware.resetFields();
         },
         // 分页插件事件--通过改变分页中间变量来改变分页参数
         callFather(parm) {
             this.formInline.page = parm.currentPage
             this.formInline.limit = parm.pageSize
-            this.getWareList()
-            // this.showWare()
+            // this.getWareList()
+            this.showWare()
             this.sortChange(this.column)
         },
         // 导出为表格函数 

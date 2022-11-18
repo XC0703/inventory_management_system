@@ -1,34 +1,7 @@
-import { get,post } from '../../utils/request';
+import { post } from '../../utils/request';
 import { ElMessage,ElMessageBox } from "element-plus";
-import {getNowTime} from '../../utils/timeEffect'
-import {formatDate} from '../../utils/timeEffect'
-// 获取临时订单
-const getCart = ()=>{
-    let isReq = false;//是否请求成功的标志
-    const getOrderByQuery = async ()=>{
-        let tempArr = [];
-        const result = await get('/auth/misercart/list')
-        .then(()=>{
-            isReq = true
-            // console.log(result)
-            if (result?.msg === "success" && result?.page?.list) {
-                tempArr = JSON.parse(JSON.stringify(result.page.list)); //获取到数据
-                return tempArr
-            }else{
-                ElMessage.error("未获取到数据，请重新获取！");
-            }
-        })
-        .catch(()=>{
-            ElMessage.error("未获取到数据，请重新获取！");
-        })
-    }
-    getOrderByQuery() //判断请求是否成功
-    if(isReq){
-        return getOrderByQuery().then()
-    }else{
-        return []
-    }
-}
+import {getNowTime,formatDate} from '../../utils/timeEffect'
+
 // 编辑订单后进行保存
 const submitForm = async(editData,fun)=>{
     const submitData = {
@@ -49,21 +22,19 @@ const submitForm = async(editData,fun)=>{
     submitData.wareCount = editData.wareCount;
     submitData.createTime = editData.createTime;
     submitData.updateTime = getNowTime();
-    console.log("请求路由：/cart/misercart/update")
-    console.log(submitData)
-    const result = await post('/cart/misercart/update',submitData)
-    .then(()=>{
-        // console.log(result)
+    // console.log("请求路由：/cart/misercart/update")
+    // console.log(submitData)
+    try{
+        const result = await post('/cart/misercart/update',submitData)
         if (result?.msg === "success") {
             ElMessage.success('更新成功！')
             fun();
         }else{
             ElMessage.error('更新失败，请稍后再试！')
         }
-    })
-    .catch(() => {
+    }catch{
         ElMessage.error('更新失败，请稍后再试！')
-    })
+    }
 };
 // 将临时订单加入订单
 const postCart = async(sels,fun)=>{
@@ -75,40 +46,36 @@ const postCart = async(sels,fun)=>{
             submitData[i].createTime = formatDate(submitData[i].createTime);
             submitData[i].updateTime = formatDate(submitData[i].updateTime);
         }
-        console.log("请求路由：/auth/misercart/postcart")
-        console.log(submitData)
-        const result = await post('/auth/misercart/postcart',submitData)
-        .then(()=>{
-            // console.log(result)
+        // console.log("请求路由：/auth/misercart/postcart")
+        // console.log(submitData)
+        try{
+            const result = await post('/auth/misercart/postcart',submitData)
             if (result?.msg === "success") {
                 ElMessage.success('添加成功！')
                 fun()
             }else{
                 ElMessage.error('添加失败，请稍后再试！')
             }
-        })
-        .catch(() => {
+        }catch{
             ElMessage.error('添加失败，请稍后再试！')
-        })
+        }
     }
 }
 // 删除订单函数
 const handleDetele = async(deleteIdList,fun)=>{
-    console.log("请求路由：/cart/misercart/delete")
-    console.log(deleteIdList)
-    const result = post('/cart/misercart/delete',deleteIdList)
-    .then(()=>{
-        // console.log(result)
+    // console.log("请求路由：/cart/misercart/delete")
+    // console.log(deleteIdList)
+    try{
+        const result = await post('/cart/misercart/delete',deleteIdList)
         if (result?.msg === "success") {
             ElMessage.success('删除成功！')
             fun();
         }else{
             ElMessage.error('删除失败，请稍后再试！')
         }
-    })
-    .catch(()=>{
+    }catch{
         ElMessage.error('删除失败，请稍后再试！')
-    })
+    }
 };
 // 删除单个
 const singleDelete = async (index,row,fun)=>{
@@ -146,4 +113,4 @@ const batchDelete = async(sels,fun)=>{
         })
     }
 };
-export {getCart,submitForm,postCart,singleDelete,batchDelete};
+export {submitForm,postCart,singleDelete,batchDelete};

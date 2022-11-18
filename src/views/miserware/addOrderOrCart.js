@@ -3,7 +3,7 @@ import { ElMessage } from "element-plus";
 import {getNowTime} from '../../utils/timeEffect'
 
 // 编辑订单后进行保存
-const submitOrder = async(addOrder,addFlag)=>{
+const submitOrder = async(addOrder,addFlag,fun)=>{
     const submitData = {
         userId:'',
         userName:'',
@@ -22,36 +22,33 @@ const submitOrder = async(addOrder,addFlag)=>{
     if(addFlag=='cart'){
         submitData.updateTime = nowTime;
         submitData.cartId = '后端处理cartId';
-        console.log("请求路由：/auth/misercart/loginout")
-        console.log(submitData)
-        const result = await post('/auth/misercart/loginout',{wareId:submitData.wareId,wareCount:submitData.wareCount})
-        .then(()=>{
-            // console.log(result)
+        // console.log("请求路由：/auth/misercart/loginout")
+        // console.log(submitData)
+        try{
+            const result = await post('/auth/misercart/loginout',{wareId:submitData.wareId,wareCount:submitData.wareCount})
             if (result?.msg === "success") {
                 ElMessage.success('添加成功！')
             }else{
                 ElMessage.error('添加失败，请稍后再试！')
             }
-        })
-        .catch(() => {
+        }catch{
             ElMessage.error('添加失败，请稍后再试！')
-        })
+        }
     }else if(addFlag=='order'){
         submitData.orderId = '后端处理orderId';
-        console.log("请求路由：/order/miserorder/save")
-        console.log(submitData)
-        const result = await post('/order/miserorder/save',submitData)
-        .then(()=>{
-            // console.log(result)
+        // console.log("请求路由：/order/miserorder/save")
+        // console.log(submitData)
+        try{
+            const result = await post('/order/miserorder/save',submitData)
             if (result?.msg === "success") {
                 ElMessage.success('添加成功！')
+                fun();
             }else{
                 ElMessage.error('添加失败，请稍后再试！')
             }
-        })
-        .catch(() => {
+        }catch{
             ElMessage.error('添加失败，请稍后再试！')
-        })
+        }
     }
 };
 

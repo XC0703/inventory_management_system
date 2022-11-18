@@ -28,7 +28,7 @@
                 <el-table-column align="center" label="负责人名称" prop="userName" :show-overflow-tooltip='true' min-width="100"></el-table-column>
                 <el-table-column align="center" label="物品名称" prop="wareName" :show-overflow-tooltip='true' min-width="100"></el-table-column>
                 <el-table-column align="center" label="物品数量" prop="wareCount" :show-overflow-tooltip='true' min-width="100" sortable="custom"></el-table-column>
-                <el-table-column align="center" label="创建时间" prop="createTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
+                <el-table-column align="center" label="创建时间" prop="creatTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
                 <el-table-column align="center" label="更新时间" prop="updateTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
                 <el-table-column align="center" label="操作" min-width="140">
                     <template #default="scope">
@@ -64,8 +64,9 @@
 <script >
 import tableSortChange from '../../utils/tableSortChange'
 import {formatDate} from '../../utils/timeEffect'
+import { get } from '../../utils/request';
 import PaginateView from '../../components/PaginateView'
-import {getCart,submitForm,postCart,singleDelete,batchDelete} from './cartEffect'
+import {submitForm,postCart,singleDelete,batchDelete} from './cartEffect'
 import simulateDataList from '@/assets/simulateData/dataCart.json'
 export default {
     name:'MiserCart',
@@ -107,8 +108,8 @@ export default {
         }
     },
     created () {
-            this.getCartList()
-            // this.showCart()
+        // this.getCartList()
+        this.showCart()
     },
     methods: {
         // 模拟的全部订单列表
@@ -122,10 +123,23 @@ export default {
             this.pageparm.pageSize = this.formInline.limit
             this.pageparm.total =  this.cartList.length
         },
+        // 获取临时订单列表
+        async getCart(){
+            // console.log("请求路由：/auth/misercart/list")
+            try{
+                const result = await get('/auth/misercart/list')
+                if (result?.msg === "success" && result?.page?.list) {
+                    this.cartList = result.page.list; //获取到数据
+                }else{
+                    this.$message.error("未获取到数据，请重新获取！");
+                }
+            }catch{
+                this.$message.error("未获取到数据，请重新获取！");
+            }
+        },
         // 展示查询数据
         async showCart(){
-            // 将接口获取的数据进行处理
-            this.cartList = JSON.parse(JSON.stringify(getCart(this.query)));
+            this.getCart();
             this.loading = false
             this.pageparm.currentPage = this.formInline.page
             this.pageparm.pageSize = this.formInline.limit
@@ -165,8 +179,8 @@ export default {
         callFather(parm) {
             this.formInline.page = parm.currentPage
             this.formInline.limit = parm.pageSize
-            this.getCartList()
-            // this.showCart()
+            // this.getCartList()
+            this.showCart()
             this.sortChange(this.column)
         },
         // 自定义表格排序规则

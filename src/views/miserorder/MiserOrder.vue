@@ -39,7 +39,7 @@
             <el-table-column align="center" label="物品id" prop="wareId" :show-overflow-tooltip='true' min-width="85"></el-table-column>
             <el-table-column align="center" label="物品名称" prop="wareName" :show-overflow-tooltip='true' min-width="100"></el-table-column>
             <el-table-column align="center" label="物品数量" prop="wareCount" :show-overflow-tooltip='true' min-width="100" sortable="custom"></el-table-column>
-            <el-table-column align="center" label="创建时间" prop="createTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
+            <el-table-column align="center" label="创建时间" prop="creatTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
             <el-table-column align="center" label="操作" min-width="100">
                 <template #default="scope">
                     <el-button size="small" type="danger" @click="singleDelete(scope.$index, scope.row,showOrder)">删除</el-button>
@@ -55,8 +55,9 @@
 <script >
 import tableSortChange from '../../utils/tableSortChange'
 import {formatDate} from '../../utils/timeEffect'
+import {get} from '../../utils/request';
 import PaginateView from '../../components/PaginateView'
-import { getOrder,handleExport,singleDelete,batchDelete } from './orderEffect'
+import { handleExport,singleDelete,batchDelete } from './orderEffect'
 import simulateDataList from '@/assets/simulateData/dataOrder.json'
 export default {
     name:'MiserOrder',
@@ -87,8 +88,8 @@ export default {
         }
     },
     created () {
-            this.getOrderList()
-            // this.showOrder()
+        // this.getOrderList()
+        this.showOrder()
     },
     methods: {
         // 模拟的全部订单列表
@@ -102,14 +103,42 @@ export default {
             this.pageparm.pageSize = this.formInline.limit
             this.pageparm.total =  this.orderList.length
         },
+        // 获取订单列表（包括全部与单个两种情况）
+        async getOrder(query){
+            this.orderList = [];
+            if(query!=''){
+                // console.log("请求路由：/order/miserorder/info/order000001")
+                try{
+                    const result = await get(`/order/miserorder/info/${query}`)
+                    if (result?.msg === "success" && result?.page?.list) {
+                    this.orderList.push(result.miserOrder) //获取到数据
+                    }else{
+                        this.$message.error("未获取到数据，请重新输入！");
+                    }
+                }catch{
+                    this.$message.error("未获取到数据，请重新输入！");
+                }
+            }else{
+                try{
+                    // console.log("请求路由：/order/miserorder/list")
+                    const result = await get('/order/miserorder/list')
+                    if (result?.msg === "success" && result?.page?.list) {
+                        this.orderList = result.page.list
+                    }else{
+                        this.$message.error("未获取到数据，请重新获取！");
+                    }
+                }catch{
+                    this.$message.error("未获取到数据，请重新获取！");
+                }
+            }
+        },
         // 展示查询数据
         async showOrder(){
-                // 将接口获取的数据进行处理
-                this.orderList = JSON.parse(JSON.stringify(getOrder(this.query)));
-                this.loading = false
-                this.pageparm.currentPage = this.formInline.page
-                this.pageparm.pageSize = this.formInline.limit
-                this.pageparm.total =  this.orderList.length
+            this.getOrder(this.query)
+            this.loading = false
+            this.pageparm.currentPage = this.formInline.page
+            this.pageparm.pageSize = this.formInline.limit
+            this.pageparm.total =  this.orderList.length
         },
         // 选中的值显示--用于批量删除
         selsChange(sels) {
@@ -127,17 +156,17 @@ export default {
         callFather(parm) {
             this.formInline.page = parm.currentPage
             this.formInline.limit = parm.pageSize
-            this.getOrderList()
-            // this.showOrder()
+            // this.getOrderList()
+            this.showOrder()
             this.sortChange(this.column)
         },
         // 导出为表格函数 
         handleExport,
         // 自定义表格排序规则
         sortChange(column){
-                // 拷贝排序时的列数类型参数
-                this.column = column;
-                this.orderList = JSON.parse(JSON.stringify(tableSortChange(column,this.orderList)));
+            // 拷贝排序时的列数类型参数
+            this.column = column;
+            this.orderList = JSON.parse(JSON.stringify(tableSortChange(column,this.orderList)));
         },
         // 将后端传递过来的时间进行格式转换
         formatDate(row, column) {

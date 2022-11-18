@@ -1,54 +1,6 @@
-import {get,post} from '../../utils/request';
+import {post} from '../../utils/request';
 import { ElMessage,ElMessageBox } from "element-plus";
 import {getNowTime} from '../../utils/timeEffect'
-// 获取用户列表（包括全部与单个两种情况）
-const getUser = (query)=>{
-    let isReq = false;//是否请求成功的标志
-    const getUserByQuery = async (query)=>{
-        let tempArr = [];
-        let userId = query;
-        if(userId!=''){
-            console.log("请求路由：/user/miseruser/info")
-            console.log(userId)
-            const result = await get('/user/miseruser/info',{
-                userId
-            })
-            .then(()=>{
-                isReq = true
-                // console.log(result)
-                if (result?.msg === "success" && result?.page?.list) {
-                    tempArr.push(result.miserUser) //获取到数据
-                    return tempArr
-                }
-            })
-            .catch(()=>{
-                ElMessage.error("未获取到数据，请重新输入！");
-            })
-        }else{
-            console.log("请求路由：/user/miseruser/list")
-            const result = await get('/user/miseruser/list')
-            .then(()=>{
-                isReq = true
-                // console.log(result)
-                if (result?.msg === "success" && result?.page?.list) {
-                    tempArr = JSON.parse(JSON.stringify(result.page.list)); //获取到数据
-                    return tempArr
-                }else{
-                    ElMessage.error("未获取到数据，请重新获取！");
-                }
-            })
-            .catch(()=>{
-                ElMessage.error("未获取到数据，请重新获取！");
-            })
-        }
-    }
-    getUserByQuery(query) //判断请求是否成功
-    if(isReq){
-        return getUserByQuery(query).then()
-    }else{
-        return []
-    }
-}
 // 添加/编辑用户后进行保存
 const submitForm = async(editData,fun,title)=>{
     const submitData = {
@@ -66,64 +18,56 @@ const submitForm = async(editData,fun,title)=>{
     // console.log(nowTime)
     // 添加
     if(title == '添加'){
-        submitData.userId = '后端处理userId'
+        submitData.userId = "后端处理userId"
         submitData.createTime = nowTime;
         submitData.updateTime = nowTime;
-        // console.log("添加")
-        console.log("请求路由：/user/miseruser/save")
-        console.log(submitData)
-        const result = await post('/user/miseruser/save',submitData)
-        .then(()=>{
-            // console.log(result)
+        // console.log("请求路由：/user/miseruser/save")
+        // console.log(submitData)
+        try{
+            const result = await post('/user/miseruser/save',submitData)
             if (result?.msg === "success") {
                 ElMessage.success('添加成功！')
                 fun();
             }else{
                 ElMessage.error('添加失败，请稍后再试！')
             }
-        })
-        .catch(() => {
+        }catch{
             ElMessage.error('添加失败，请稍后再试！')
-        })
+        }
     }else if(title == '编辑'){
         submitData.userId = editData.userId;
         submitData.createTime = editData.createTime;
         submitData.updateTime = nowTime;
-        // console.log('编辑')
-        console.log("请求路由：/user/miseruser/update")
-        console.log(submitData)
-        const result = await post('/user/miseruser/update',editData)
-        .then(()=>{
-            // console.log(result)
+        // console.log("请求路由：/user/miseruser/update")
+        // console.log(submitData)
+        try{
+            const result = await post('/user/miseruser/update',submitData)
             if (result?.msg === "success") {
                 ElMessage.success('更新成功！')
                 fun();
             }else{
                 ElMessage.error('更新失败，请稍后再试！')
             }
-        })
-        .catch(() => {
+        }catch{
             ElMessage.error('更新失败，请稍后再试！')
-        })
+        }
     }
 };
 // 删除用户函数
 const handleDetele = async(deleteIdList,fun)=>{
-    console.log("请求路由：/user/miseruser/delete")
-    console.log(deleteIdList)
-    const result = post('/user/miseruser/delete',deleteIdList)
-    .then(()=>{
-        // console.log(result)
+    // console.log("请求路由：/user/miseruser/delete")
+    // console.log(deleteIdList)
+    try{
+        const result = await post('/user/miseruser/delete',deleteIdList)
         if (result?.msg === "success") {
             ElMessage.success('删除成功！')
             fun();
         }else{
             ElMessage.error('删除失败，请稍后再试！')
         }
-    })
-    .catch(()=>{
+    }catch{
         ElMessage.error('删除失败，请稍后再试！')
-    })
+    }
 };
 // 删除单个
 const singleDelete = async (index,row,fun)=>{
@@ -179,4 +123,4 @@ const handleExport = (userList)=>{
         })
     })
 }
-export { getUser,submitForm,singleDelete,batchDelete,handleExport};
+export { submitForm,singleDelete,batchDelete,handleExport};

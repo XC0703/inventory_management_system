@@ -2,10 +2,10 @@ import axios from 'axios'
 
 // 创建axios实例
 const instance = axios.create({
-  // baseURL:'http://localhost:3000',
-  // withCredentials:true, //允许跨域传递cookie(登录)
-  baseURL: 'https://www.fastmock.site/mock/ae8e9031947a302fed5f92425995aa19/jd',
-  timeout: 10000
+  baseURL:'http://127.0.0.1:88/api',
+  withCredentials:true, //允许跨域传递cookie(登录)
+  // baseURL: 'https://www.fastmock.site/mock/ae8e9031947a302fed5f92425995aa19/jd',
+  // timeout: 10000
 })
 
 // 手动封装的get方法，使请求默认带上baseURL

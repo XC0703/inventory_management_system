@@ -79,8 +79,9 @@
 <script>
 import tableSortChange from '../../utils/tableSortChange'
 import {formatDate} from '../../utils/timeEffect'
+import {get} from '../../utils/request';
 import PaginateView from '../../components/PaginateView'
-import {getUser,singleDelete,batchDelete,submitForm,handleExport} from './userEffect'
+import {singleDelete,batchDelete,submitForm,handleExport} from './userEffect'
 import simulateDataList from '@/assets/simulateData/dataUser.json'
 export default {
     name:'MiserUser',
@@ -127,8 +128,8 @@ export default {
         }
     },
     created () {
-        this.getUserList()
-        // this.showUser()
+        // this.getUserList()
+        this.showUser()
     },
     methods: {
         // 模拟的全部用户列表
@@ -142,10 +143,38 @@ export default {
             this.pageparm.pageSize = this.formInline.limit
             this.pageparm.total =  this.userList.length
         },
+        // 获取用户列表（包括全部与单个两种情况）
+        async getUser(query){
+            this.userList = [];
+            if(query!=''){
+                // console.log("请求路由：/user/miseruser/info/user000001")
+                try{
+                    const result = await get(`/user/miseruser/info/${query}`)
+                    if (result?.msg === "success" && result?.miserUser) {
+                        this.userList.push(result.miserUser) //获取到数据
+                    }else{
+                        this.$message.error("未获取到数据，请重新输入！");
+                    }
+                }catch{
+                    this.$message.error("未获取到数据，请重新输入！");
+                }
+            }else{
+                try{
+                    // console.log("请求路由：/user/miseruser/list")
+                    const result = await get('/user/miseruser/list')
+                    if (result?.msg === "success" && result?.page?.list) {
+                        this.userList = result.page.list
+                    }else{
+                        this.$message.error("未获取到数据，请重新获取！");
+                    }
+                }catch{
+                    this.$message.error("未获取到数据，请重新获取！");
+                }
+            }
+        },
         // 展示查询数据
         async showUser(){
-            // 将接口获取的数据进行处理
-            this.userList = JSON.parse(JSON.stringify(getUser(this.query)));
+            this.getUser(this.query);
             this.loading = false
             this.pageparm.currentPage = this.formInline.page
             this.pageparm.pageSize = this.formInline.limit
@@ -189,8 +218,8 @@ export default {
         callFather(parm) {
             this.formInline.page = parm.currentPage
             this.formInline.limit = parm.pageSize
-            this.getUserList()
-            // this.showUser()
+            // this.getUserList()
+            this.showUser()
             this.sortChange(this.column)
         },
         // 导出为表格函数 

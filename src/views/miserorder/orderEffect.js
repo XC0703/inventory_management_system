@@ -1,53 +1,5 @@
-import {get,post} from '../../utils/request';
+import {post} from '../../utils/request';
 import { ElMessage,ElMessageBox } from "element-plus";
-// 获取订单列表（包括全部与单个两种情况）
-const getOrder = (query)=>{
-    let isReq = false;//是否请求成功的标志
-    const getOrderByQuery = async (query)=>{
-        let tempArr = [];
-        let orderId = query;
-        if(orderId!=''){
-            console.log("请求路由：/order/miserorder/info")
-            console.log(orderId)
-            const result = await get('/order/miserorder/info',{
-                orderId
-            })
-            .then(()=>{
-                isReq = true
-                // console.log(result)
-                if (result?.msg === "success" && result?.page?.list) {
-                    tempArr.push(result.miserOrder) //获取到数据
-                    return tempArr
-                }
-            })
-            .catch(()=>{
-                ElMessage.error("未获取到数据，请重新输入！");
-            })
-        }else{
-            console.log("请求路由：/order/miserorder/list")
-            const result = await get('/order/miserorder/list')
-            .then(()=>{
-                isReq = true
-                // console.log(result)
-                if (result?.msg === "success" && result?.page?.list) {
-                    tempArr = JSON.parse(JSON.stringify(result.page.list)); //获取到数据
-                    return tempArr
-                }else{
-                    ElMessage.error("未获取到数据，请重新获取！");
-                }
-            })
-            .catch(()=>{
-                ElMessage.error("未获取到数据，请重新获取！");
-            })
-        }
-    }
-    getOrderByQuery(query) //判断请求是否成功
-    if(isReq){
-        return getOrderByQuery(query).then()
-    }else{
-        return []
-    }
-}
 // 导出为表格
 const handleExport = (orderList)=>{
     import('@/utils/exportExcel').then(excel => {
@@ -68,21 +20,19 @@ const handleExport = (orderList)=>{
 }
 // 删除订单函数
 const handleDetele = async(deleteIdList,fun)=>{
-    console.log("请求路由：/order/miserorder/delete")
-    console.log(deleteIdList)
-    const result = post('/order/miserorder/delete',deleteIdList)
-    .then(()=>{
-        // console.log(result)
+    // console.log("请求路由：/order/miserorder/delete")
+    // console.log(deleteIdList)
+    try{
+        const result = await post('/order/miserorder/delete',deleteIdList)
         if (result?.msg === "success") {
             ElMessage.success('删除成功！')
             fun();
         }else{
             ElMessage.error('删除失败，请稍后再试！')
         }
-    })
-    .catch(()=>{
+    }catch{
         ElMessage.error('删除失败，请稍后再试！')
-    })
+    }
 };
 // 删除单个
 const singleDelete = async (index,row,fun)=>{
@@ -90,9 +40,9 @@ const singleDelete = async (index,row,fun)=>{
     deleteIdList.push(row.orderId)
     // console.log(deleteIdList)
     ElMessageBox.confirm('确定要删除吗?', '删除', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
     }).then(()=>{
         handleDetele(deleteIdList,fun)
     }).catch(() => {
@@ -110,9 +60,9 @@ const batchDelete = async(sels,fun)=>{
         }
         // console.log(deleteIdList)
         ElMessageBox.confirm('确定要删除吗?', '删除', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
         }).then(()=>{
             handleDetele(deleteIdList,fun)
         }).catch(() => {
@@ -120,4 +70,4 @@ const batchDelete = async(sels,fun)=>{
         })
     }
 };
-export {getOrder,handleExport,singleDelete,batchDelete};
+export {handleExport,singleDelete,batchDelete};

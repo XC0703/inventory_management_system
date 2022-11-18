@@ -87,10 +87,10 @@ export default {
           submitData.userPower = '后端处理userPower',
           submitData.createTime = '后端处理createTime',
           submitData.updateTime = '后端处理updateTime',
-          console.log("请求路由：/auth/miserauth/login")
-          console.log(submitData)
+          // console.log("请求路由：/auth/miserauth/login")
+          // console.log(submitData)
           // 每遇到一个await都会先返回,再往下执行,变成了同步操作
-          result = await post('/api/user/login',{
+          result = await post('/auth/miserauth/login',{
             userName:form.userName,
             passWord:form.passWord
           })
