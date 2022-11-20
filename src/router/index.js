@@ -77,7 +77,7 @@ router.beforeEach((to,from,next)=>{
 
     // 用户没有登录或者当前不是注册页面的时候，无法访问其它页面，只能跳到LoginView页面
     //其它情况则展示当前页面
-    if(!isLogin&&(to.name !=='LoginView'&&to.name !=='RegisterView'&&to.name !=='MiserWare'&&to.name !=='MiserOrder'&&to.name !=='MiserCart'&&to.name !=='MiserUser'&&to.name !=='DataVis')){
+    if(!isLogin&&(to.name !=='LoginView'&&to.name !=='RegisterView')){
         next({name:'LoginView'})
     }else{
         next()

@@ -110,7 +110,7 @@ export default {
                 // console.log("请求路由：/order/miserorder/info/order000001")
                 try{
                     const result = await get(`/order/miserorder/info/${query}`)
-                    if (result?.msg === "success" && result?.page?.list) {
+                    if (result?.msg === "success") {
                     this.orderList.push(result.miserOrder) //获取到数据
                     }else{
                         this.$message.error("未获取到数据，请重新输入！");

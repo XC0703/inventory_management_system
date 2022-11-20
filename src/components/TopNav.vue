@@ -44,7 +44,7 @@ export default {
       try{
         // console.log("请求路由：/auth/miserauth/loginout")
           const result = await post(`/auth/miserauth/loginout`)
-          if (result?.msg === "success") {
+          if (result?.msg === "登出成功") {
             ElMessage.success("已成功退出！");
             localStorage.removeItem('isLogin')
           router.replace({ name: 'LoginView'})

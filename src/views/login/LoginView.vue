@@ -6,11 +6,11 @@
     </div>
     <div class="wrapper__input">
         <el-form ref="form" :model="form" :rules="rules">
-          <el-form-item prop="userName">
+          <el-form-item prop="userId">
             <el-input
-              v-model="form.userName"
+              v-model.number="form.userId"
               clearable
-              placeholder="请输入用户名"
+              placeholder="请输入账号"
             ></el-input>
           </el-form-item>
           <el-form-item prop="passWord">
@@ -49,11 +49,11 @@ export default {
   data(){
     return{
       form: {
-        userName: "",
+        userId: "",
         passWord: "",
       },
       rules: {
-        userName: [{ required: true, message: "请输入用户名", trigger: "blur" }],
+        userId: [{ required: true, message: "请输入账号", trigger: "blur" },{ type:'number',message:'必须是数字',trigger: 'blur' }],
         passWord: [{ required: true, message: "请输入密码", trigger: "blur" },],
       },
       checked: false,
@@ -71,33 +71,31 @@ export default {
         let result='';
         let submitData = {
           userId:'',
-          userName:'',
+          // userName:'',
           userPassword:'',
-          userPower:'',
-          createTime:'',
-          updateTime:''
+          // userPower:'',
+          // createTime:'',
+          // updateTime:''
         };
-        if(form.userName==''||form.passWord==''){
-          this.$message.info('请输入用户名或密码')
+        if(form.userId==''||form.passWord==''){
+          this.$message.info('请输入账户或密码')
           return;
         }else{
-          submitData.userId = '后端处理userId',
-          submitData.userName = form.userName,
+          // submitData.userId = '后端处理userId',
+          submitData.userId = form.userId,
           submitData.userPassword = form.passWord,
-          submitData.userPower = '后端处理userPower',
-          submitData.createTime = '后端处理createTime',
-          submitData.updateTime = '后端处理updateTime',
+          // submitData.userPower = '后端处理userPower',
+          // submitData.createTime = '后端处理createTime',
+          // submitData.updateTime = '后端处理updateTime',
           // console.log("请求路由：/auth/miserauth/login")
           // console.log(submitData)
           // 每遇到一个await都会先返回,再往下执行,变成了同步操作
-          result = await post('/auth/miserauth/login',{
-            userName:form.userName,
-            passWord:form.passWord
-          })
+          // console.log(submitData)
+          result = await post('/auth/miserauth/login',submitData)
         }
         // result?.data?.errno的意思是尝试获取result中的data中的error属性，它和result.data.errno的意思是一样的，但是比result.data.errno的容错性更高。
         // 代码会尝试查找errno，如果查找不到，会返回undefined，而不会报错
-        if(result?.errno===0){
+        if(result?.msg === "success"){
           localStorage.isLogin = true;
           // 在登录之后，通过路由实例跳转
           router.push({name:'MiserWare'})

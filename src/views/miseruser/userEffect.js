@@ -1,26 +1,26 @@
 import {post} from '../../utils/request';
 import { ElMessage,ElMessageBox } from "element-plus";
-import {getNowTime} from '../../utils/timeEffect'
+// import {getNowTime} from '../../utils/timeEffect'
 // 添加/编辑用户后进行保存
 const submitForm = async(editData,fun,title)=>{
     const submitData = {
-        userId:'',
+        // userId:'',
         userName:'',
         userPassword:'',
         userPower:'',
-        createTime:'',
-        updateTime:''
+        // createTime:'',
+        // updateTime:''
     };
     submitData.userName = editData.userName;
     submitData.userPassword = editData.userPassword;
     submitData.userPower = editData.userPower;
-    const nowTime = getNowTime();
+    // const nowTime = getNowTime();
     // console.log(nowTime)
     // 添加
     if(title == '添加'){
-        submitData.userId = "后端处理userId"
-        submitData.createTime = nowTime;
-        submitData.updateTime = nowTime;
+        // submitData.userId = "后端处理userId"
+        // submitData.createTime = nowTime;
+        // submitData.updateTime = nowTime;
         // console.log("请求路由：/user/miseruser/save")
         // console.log(submitData)
         try{
@@ -36,8 +36,8 @@ const submitForm = async(editData,fun,title)=>{
         }
     }else if(title == '编辑'){
         submitData.userId = editData.userId;
-        submitData.createTime = editData.createTime;
-        submitData.updateTime = nowTime;
+        // submitData.createTime = editData.createTime;
+        // submitData.updateTime = nowTime;
         // console.log("请求路由：/user/miseruser/update")
         // console.log(submitData)
         try{

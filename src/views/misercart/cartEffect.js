@@ -49,7 +49,8 @@ const postCart = async(sels,fun)=>{
         // console.log("请求路由：/auth/misercart/postcart")
         // console.log(submitData)
         try{
-            const result = await post('/auth/misercart/postcart',submitData)
+            // const result = await post('/auth/misercart/postcart',submitData)
+            const result = await post('/auth/misercart/postcart')
             if (result?.msg === "success") {
                 ElMessage.success('添加成功！')
                 fun()

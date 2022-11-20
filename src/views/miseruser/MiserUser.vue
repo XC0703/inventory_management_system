@@ -43,7 +43,7 @@
                 <el-table-column align="center" label="用户名称" prop="userName" :show-overflow-tooltip='true' min-width="110"></el-table-column>
                 <el-table-column align="center" label="用户密码" prop="userPassword" :show-overflow-tooltip='true' min-width="110"></el-table-column>
                 <el-table-column align="center" label="用户权限" prop="userPower" :show-overflow-tooltip='true' filter-multiple min-width="100" sortable="custom"></el-table-column>
-                <el-table-column align="center" label="创建时间" prop="createTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
+                <el-table-column align="center" label="创建时间" prop="creatTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
                 <el-table-column align="center" label="更新时间" prop="updateTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
                 <el-table-column align="center" label="操作" min-width="140">
                     <template #default="scope">
