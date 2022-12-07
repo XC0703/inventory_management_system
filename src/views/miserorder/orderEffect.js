@@ -1,5 +1,6 @@
 import {post} from '../../utils/request';
 import { ElMessage,ElMessageBox } from "element-plus";
+// import {getNowTime} from '../../utils/timeEffect'
 // 导出为表格
 const handleExport = (orderList)=>{
     import('@/utils/exportExcel').then(excel => {
@@ -70,4 +71,38 @@ const batchDelete = async(sels,fun)=>{
         })
     }
 };
-export {handleExport,singleDelete,batchDelete};
+// 编辑订单后进行保存
+const submitForm = async(editData,fun)=>{
+    const submitData = {
+        orderId:'',
+        userId:'',
+        userName:'',
+        wareId:'',
+        wareName:'',
+        wareCount:'',
+        //creatTime:'',
+        //updateTime:''
+    };
+    submitData.orderId = editData.orderId;
+    submitData.userId = editData.userId;
+    submitData.userName = editData.userName;
+    submitData.wareId = editData.wareId;
+    submitData.wareName = editData.wareName;
+    submitData.wareCount = editData.wareCount;
+    //submitData.creatTime = editData.creatTime;
+    //submitData.updateTime = getNowTime();
+    // console.log("请求路由：/order/miserorder/update")
+    // console.log(submitData)
+    try{
+        const result = await post('/order/miserorder/update',submitData)
+        if (result?.msg === "success") {
+            ElMessage.success('更新成功！')
+            fun();
+        }else{
+            ElMessage.error('更新失败，请稍后再试！')
+        }
+    }catch{
+        ElMessage.error('更新失败，请稍后再试！')
+    }
+};
+export {submitForm,handleExport,singleDelete,batchDelete};

@@ -7,7 +7,7 @@
     <el-sub-menu index="1" class="submenu">
       <template v-slot:title>
         <i class="iconfont icon-xitongguanliyuan"></i>
-        <span>超级管理员</span>
+        <span>{{userIdentity}}</span>
       </template>
       <el-menu-item @click="content()" index="1-1">
         <i class="iconfont icon-shezhi"></i>
@@ -38,6 +38,20 @@ export default {
       user: {}
     }
   },
+  computed:{
+    userIdentity:function(){
+      let userIdentity = ''
+        // console.log(this.$store.state.userInfo)
+        const userPower = this.$store.state.userInfo.userPower
+        // console.log(userPower)
+        if(userPower>100){
+          userIdentity="超级管理员"
+        }else{
+          userIdentity="普通管理员"
+        }
+        return userIdentity
+    }
+  },
   setup() {
     const router = useRouter()
     const handleLogout = async() => {
@@ -46,8 +60,9 @@ export default {
           const result = await post(`/auth/miserauth/loginout`)
           if (result?.msg === "登出成功") {
             ElMessage.success("已成功退出！");
-            localStorage.removeItem('isLogin')
-          router.replace({ name: 'LoginView'})
+            sessionStorage.removeItem('isLogin')
+            sessionStorage.removeItem('userInfo')
+            router.replace({ name: 'LoginView'})
           }else{
             ElMessage.error("请重试！");
           }

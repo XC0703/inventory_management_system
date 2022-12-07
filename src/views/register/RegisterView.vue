@@ -67,7 +67,7 @@
             // userId:'',
             userName:'',
             userPassword:'',
-            // userPower:'',
+            userPower:'',
             // createTime:'',
             // updateTime:''
           };
@@ -80,7 +80,7 @@
             // submitData.userId = '后端处理userId',
             submitData.userName = form.userName,
             submitData.userPassword = form.passWord,
-            // submitData.userPower = '默认注册低权限用户',
+            submitData.userPower = 20,
             // submitData.createTime = '后端处理createTime',
             // submitData.updateTime = '后端处理updateTime',
             // console.log("请求路由：/auth/miserauth/register")

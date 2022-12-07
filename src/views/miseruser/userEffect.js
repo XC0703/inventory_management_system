@@ -1,5 +1,7 @@
+import store from '../../store'
 import {post} from '../../utils/request';
 import { ElMessage,ElMessageBox } from "element-plus";
+import router from '@/router'
 // import {getNowTime} from '../../utils/timeEffect'
 // 添加/编辑用户后进行保存
 const submitForm = async(editData,fun,title)=>{
@@ -45,6 +47,12 @@ const submitForm = async(editData,fun,title)=>{
             if (result?.msg === "success") {
                 ElMessage.success('更新成功！')
                 fun();
+                if(submitData.userId == store.state.userInfo.userId){
+                    ElMessage.info("需要重新登录！");
+                    sessionStorage.removeItem('isLogin')
+                    sessionStorage.removeItem('userInfo')
+                    router.replace({ name: 'LoginView'})
+                }
             }else{
                 ElMessage.error('更新失败，请稍后再试！')
             }

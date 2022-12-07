@@ -146,6 +146,8 @@ export default {
             // 交易操作时需要的参数
             addwareVisible: false, //控制添加订单页面显示与隐藏
             addware:{
+                userId:'',
+                userName:'',
                 wareId:'',
                 wareName:'',
                 wareCount:0
@@ -155,6 +157,7 @@ export default {
         }
     },
     created () {
+        // console.log(this.$store.state.userInfo)
         // this.getWareList()
         this.showWare()
     },
@@ -179,6 +182,10 @@ export default {
                     const result = await get(`/ware/miserware/info/${query}`)
                     if (result?.msg === "success"&& result?.miserWare) {
                         this.wareList.push(result.miserWare) //获取到数据
+                        this.loading = false
+                        this.pageparm.currentPage = this.formInline.page
+                        this.pageparm.pageSize = this.formInline.limit
+                        this.pageparm.total =  this.wareList.length
                     }else{
                         this.$message.error("未获取到数据，请重新输入！");
                     }
@@ -191,6 +198,10 @@ export default {
                     const result = await get('/ware/miserware/list')
                     if (result?.msg === "success" && result?.page?.list) {
                         this.wareList = result.page.list
+                        this.loading = false
+                        this.pageparm.currentPage = this.formInline.page
+                        this.pageparm.pageSize = this.formInline.limit
+                        this.pageparm.total =  this.wareList.length
                     }else{
                         this.$message.error("未获取到数据，请重新获取！");
                     }
@@ -202,10 +213,6 @@ export default {
         // 展示查询数据
         async showWare(){
             this.getWare(this.query);
-            this.loading = false
-            this.pageparm.currentPage = this.formInline.page
-            this.pageparm.pageSize = this.formInline.limit
-            this.pageparm.total =  this.wareList.length
         },
         // 选中的值显示--用于批量删除
         selsChange(sels) {
@@ -247,6 +254,8 @@ export default {
             this.addware.wareId = row.wareId
             this.addware.wareName = row.wareName
             this.addware.wareCount = 0
+            this.addware.userId = this.$store.state.userInfo.userId
+            this.addware.userName = this.$store.state.userInfo.userName
         },
         submitOrder,
         closewareDialog(){

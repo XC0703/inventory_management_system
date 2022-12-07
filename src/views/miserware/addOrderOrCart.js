@@ -13,8 +13,8 @@ const submitOrder = async(addOrder,addFlag,fun)=>{
         // createTime:''
     };
     // const nowTime = getNowTime();
-    // submitData.userId = "接口获取登录信息后得到userId";
-    // submitData.userName = "接口获取登录信息后得到userName";
+    submitData.userId = addOrder.userId;
+    submitData.userName = addOrder.userName;
     submitData.wareId = addOrder.wareId;
     submitData.wareName = addOrder.wareName;
     submitData.wareCount = addOrder.wareCount;

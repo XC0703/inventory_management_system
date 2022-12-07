@@ -152,6 +152,10 @@ export default {
                     const result = await get(`/user/miseruser/info/${query}`)
                     if (result?.msg === "success" && result?.miserUser) {
                         this.userList.push(result.miserUser) //获取到数据
+                        this.loading = false
+                        this.pageparm.currentPage = this.formInline.page
+                        this.pageparm.pageSize = this.formInline.limit
+                        this.pageparm.total =  this.userList.length
                     }else{
                         this.$message.error("未获取到数据，请重新输入！");
                     }
@@ -164,6 +168,10 @@ export default {
                     const result = await get('/user/miseruser/list')
                     if (result?.msg === "success" && result?.page?.list) {
                         this.userList = result.page.list
+                        this.loading = false
+                        this.pageparm.currentPage = this.formInline.page
+                        this.pageparm.pageSize = this.formInline.limit
+                        this.pageparm.total =  this.userList.length
                     }else{
                         this.$message.error("未获取到数据，请重新获取！");
                     }
@@ -175,10 +183,6 @@ export default {
         // 展示查询数据
         async showUser(){
             this.getUser(this.query);
-            this.loading = false
-            this.pageparm.currentPage = this.formInline.page
-            this.pageparm.pageSize = this.formInline.limit
-            this.pageparm.total =  this.userList.length
         },
         // 选中的值显示--用于批量删除
         selsChange(sels) {

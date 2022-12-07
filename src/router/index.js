@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-
+import store from '../store'
+import { ElMessage } from "element-plus";
 const routes = [
 {
     path:'/',
@@ -42,7 +43,7 @@ const routes = [
     component:()=>import(/* webpackChunName:"login" */ '../views/login/LoginView'),
     // 只有访问LoginView这个页面之前才会执行,作用是登录之后无法访问LoginView页面
     beforeEnter(to,from,next){
-        const {isLogin} = localStorage;//解构赋值，相当于const isLogin = localStorage.isLogin
+        const {isLogin} = sessionStorage;//解构赋值，相当于const isLogin = sessionStorage.isLogin
         // 如果已经登录，则跳转到IndexView页面，否则正常展示当前页面
         isLogin ? next({name:'IndexView'}): next();
     }
@@ -53,7 +54,7 @@ const routes = [
     component:()=>import(/* webpackChunName:"register" */ '../views/register/RegisterView'),
     // 只有访问LoginView这个页面之前才会执行,作用是登录之后无法访问LoginView页面
     beforeEnter(to,from,next){
-        const {isLogin} = localStorage;//解构赋值，相当于const isLogin = localStorage.isLogin
+        const {isLogin} = sessionStorage;//解构赋值，相当于const isLogin = sessionStorage.isLogin
         // 如果已经登录，则跳转到IndexView页面，否则正常展示当前页面
         isLogin ? next({name:'IndexView'}): next();
     }
@@ -69,7 +70,7 @@ const router = createRouter({
 // beforeEach表示在初始化时候被调用和每次路由切换之前别调用
 router.beforeEach((to,from,next)=>{
     // isLogin在本地存储中
-    const isLogin = localStorage.isLogin;
+    const isLogin = sessionStorage.isLogin;
 
     //to：进入到哪个路由去
     //from：从哪个路由离开
@@ -79,6 +80,9 @@ router.beforeEach((to,from,next)=>{
     //其它情况则展示当前页面
     if(!isLogin&&(to.name !=='LoginView'&&to.name !=='RegisterView')){
         next({name:'LoginView'})
+    }else if(store.state.userInfo.userPower<=100&&to.name =='MiserUser'){
+        ElMessage.info('用户管理模块只对超级管理员开放！')
+        router.push({name:'MiserWare'})
     }else{
         next()
     }

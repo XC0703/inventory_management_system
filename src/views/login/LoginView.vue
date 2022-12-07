@@ -42,7 +42,7 @@
 
 <script>
 import router from '@/router'
-import {post} from '../../utils/request';
+import { post } from '../../utils/request';
 
 export default {
   name: 'LoginView',
@@ -60,12 +60,13 @@ export default {
     }
   },
   mounted() {
-      if(localStorage.getItem("news")){
-        this.form=JSON.parse(localStorage.getItem("news"))
+      if(localStorage.getItem("remUser")){
+        this.form=JSON.parse(localStorage.getItem("remUser"))
         this.checked=true
       }
   },
   methods:{
+    // 登录
     async handleLogin(form){
       try{
         let result='';
@@ -96,10 +97,12 @@ export default {
         // result?.data?.errno的意思是尝试获取result中的data中的error属性，它和result.data.errno的意思是一样的，但是比result.data.errno的容错性更高。
         // 代码会尝试查找errno，如果查找不到，会返回undefined，而不会报错
         if(result?.msg === "success"){
-          localStorage.isLogin = true;
+          sessionStorage.isLogin = true;
           // 在登录之后，通过路由实例跳转
           router.push({name:'MiserWare'})
           this.$message.success('登录成功')
+          this.$store.commit('changeUserInfo',result.data)
+          // this.getLoginUser()
         }else{
           this.$message.error('登录失败')
         }
@@ -107,17 +110,43 @@ export default {
         this.$message.error('登录失败')
       }
     },
+    // 切换到注册页面
     async handleRegisterClick(){
       router.push({name:'RegisterView'})
       this.$message.info("系统默认注册低权限管理员，若想提高权限，请联系高级管理员")
+    },
+    // 获得当前登录信息，需要用到的地方：
+    // 1、登录时验证是否为超级管理员，是的话开放用户管理功能，同时临时订单展示所有；不是则关闭用户管理功能，同时临时订单展示该管理员对应的临时订单
+    // 2、在物品管理页面加入订单或者临时订单时，绑定当前所登录用户信息
+    // 3、编辑用户信息时，如果编辑的是自己的信息，则更新成功后需要退出重新登录
+    async getLoginUser(){
+        try{
+          // const resultData={
+          //       "creatTime":1668922451000,
+          //       "updateTime":1668922451000,
+          //       "userId":15,
+          //       "userName":"scu",
+          //       "userPassword":"12345",
+          //       "userPower":120
+          // }
+            const result = await post('/auth/miserauth/getloginUser')
+            if (result?.msg == "获取用户信息成功" && result?.data) {
+              console.log(result.data)
+              this.$message.success('获取当前所登录用户信息成功！')
+            }else{
+              this.$message.error('获取当前所登录用户信息失败！')
+            }
+        }catch{
+            this.$message.error('获取当前所登录用户信息失败！')
+        }
     },
     // 记住密码
     remenber(data){
       this.checked=data
       if(this.checked){
-          localStorage.setItem("news",JSON.stringify(this.form))
+          localStorage.setItem("remUser",JSON.stringify(this.form))
       }else{
-        localStorage.removeItem("news")
+        localStorage.removeItem("remUser")
       }
     },
     // 忘记密码

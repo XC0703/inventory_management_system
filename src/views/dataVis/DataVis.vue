@@ -29,8 +29,8 @@
 </template>
 
 <script>
-import {get} from '../../utils/request';
-import { ElMessage } from "element-plus";
+// import {get} from '../../utils/request';
+// import { ElMessage } from "element-plus";
 import firstChart from './firstChart'
 import secondChart from './secondChart'
 import thirdChart from './thirdChart'
@@ -43,9 +43,9 @@ export default {
             currentChart:1
         }
     },
-    mounted(){
-        this.getSalesData()
-    },
+    // mounted(){
+    //     this.getSalesData()
+    // },
     methods:{
         handleSelect(flag){
             if(!flag){
@@ -61,19 +61,19 @@ export default {
         handleCurChart(num){
             this.currentChart = num;
         },
-        async getSalesData(){
-            // console.log("请求路由：/misersales/list")
-            try{
-                const result = await get('/misersales/list')
-                if (result?.msg === "success" && result?.page?.list) {
-                    console.log("获取到数据")
-                }else{
-                    ElMessage.error("未获取到数据！");
-                }
-            }catch{
-                ElMessage.error("未获取到数据！");
-            }
-        }
+        // async getSalesData(){
+        //     // console.log("请求路由：/misersales/list")
+        //     try{
+        //         const result = await get('/misersales/list')
+        //         if (result?.msg === "success" && result?.page?.list) {
+        //             console.log("获取到数据")
+        //         }else{
+        //             ElMessage.error("未获取到数据！");
+        //         }
+        //     }catch{
+        //         ElMessage.error("未获取到数据！");
+        //     }
+        // }
     },
     components:{firstChart,secondChart,thirdChart}
 }
