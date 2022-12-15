@@ -40,7 +40,7 @@
             <el-table-column align="center" label="物品名称" prop="wareName" :show-overflow-tooltip='true' min-width="100"></el-table-column>
             <el-table-column align="center" label="物品数量" prop="wareCount" :show-overflow-tooltip='true' min-width="100" sortable="custom"></el-table-column>
             <el-table-column align="center" label="创建时间" prop="creatTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
-            <el-table-column align="center" label="操作" min-width="100">
+            <el-table-column align="center" label="操作" min-width="140">
                 <template #default="scope">
                     <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                     <el-button size="small" type="danger" @click="singleDelete(scope.$index, scope.row,showOrder)">删除</el-button>

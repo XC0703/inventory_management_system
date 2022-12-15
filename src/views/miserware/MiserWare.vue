@@ -37,7 +37,7 @@
             </el-col>
         </el-row>
         <!-- 物品列表区域  -->
-        <el-table height='3.2rem' @sort-change="sortChange" @selection-change="selsChange" :data="wareList.slice((pageparm.currentPage - 1) * pageparm.pageSize, pageparm.currentPage * pageparm.pageSize)"  v-loading="loading" bware element-loading-text="拼命加载中" stripe style="margin:0.15rem 0rem 0.15rem 0rem;max-height: 3.2rem;">
+        <el-table height='3.2rem' @sort-change="sortChange" @selection-change="selsChange" :data="wareList.slice((pageparm.currentPage - 1) * pageparm.pageSize, pageparm.currentPage * pageparm.pageSize)"  v-loading="loading" border element-loading-text="拼命加载中" stripe style="margin:0.15rem 0rem 0.15rem 0rem;max-height: 3.2rem;">
             <el-table-column align="center" type="selection" width="60"></el-table-column>
             <el-table-column align="center" label="物品id" prop="wareId" :show-overflow-tooltip='true' min-width="70"></el-table-column>
             <el-table-column align="center" label="物品名称" prop="wareName" :show-overflow-tooltip='true' min-width="120"></el-table-column>
