@@ -43,7 +43,7 @@
                 <el-table-column align="center" label="用户名称" prop="userName" :show-overflow-tooltip='true' min-width="110"></el-table-column>
                 <el-table-column align="center" label="用户密码" prop="userPassword" :show-overflow-tooltip='true' min-width="110"></el-table-column>
                 <el-table-column align="center" label="用户权限" prop="userPower" :show-overflow-tooltip='true' filter-multiple min-width="100" sortable="custom"></el-table-column>
-                <el-table-column align="center" label="创建时间" prop="creatTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
+                <el-table-column align="center" label="创建时间" prop="createTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
                 <el-table-column align="center" label="更新时间" prop="updateTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
                 <el-table-column align="center" label="操作" min-width="140">
                     <template #default="scope">
@@ -64,7 +64,7 @@
                     <el-input size="small" v-model="editForm.userPassword" auto-complete="off" placeholder="请输入用户密码"></el-input>
                     </el-form-item>
                     <el-form-item label="用户权限" prop="userPower">
-                    <el-input size="small" v-model.number="editForm.userPower" auto-complete="off" placeholder="请输入用户权限"></el-input>
+                    <el-input size="small" v-model.number="editForm.userPower" auto-complete="off" placeholder="请输入用户权限(最高为999)"></el-input>
                     </el-form-item>
                 </el-form>
                 <div slot:footer class="dialog-footer" style="padding-left:0.8rem">
@@ -149,13 +149,15 @@ export default {
             if(query!=''){
                 // console.log("请求路由：/user/miseruser/info/user000001")
                 try{
-                    const result = await get(`/user/miseruser/info/${query}`)
-                    if (result?.msg === "success" && result?.miserUser) {
-                        this.userList.push(result.miserUser) //获取到数据
+                    const result = await get(`miseruser/getUser/${query}`)
+                    if (result?.msg === "success" && result?.userInfo) {
+                        this.userList.push(result.userInfo) //获取到数据
                         this.loading = false
                         this.pageparm.currentPage = this.formInline.page
                         this.pageparm.pageSize = this.formInline.limit
                         this.pageparm.total =  this.userList.length
+                    }else if(result?.msg === "该用户信息不存在"){
+                        this.$message.info("该用户信息不存在！");
                     }else{
                         this.$message.error("未获取到数据，请重新输入！");
                     }
@@ -165,9 +167,9 @@ export default {
             }else{
                 try{
                     // console.log("请求路由：/user/miseruser/list")
-                    const result = await get('/user/miseruser/list')
-                    if (result?.msg === "success" && result?.page?.list) {
-                        this.userList = result.page.list
+                    const result = await get('miseruser/getUserlist')
+                    if (result?.msg === "success" && result?.userList) {
+                        this.userList = result.userList
                         this.loading = false
                         this.pageparm.currentPage = this.formInline.page
                         this.pageparm.pageSize = this.formInline.limit

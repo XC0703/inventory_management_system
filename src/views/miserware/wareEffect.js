@@ -1,33 +1,39 @@
 import {post} from '../../utils/request';
 import { ElMessage,ElMessageBox } from "element-plus";
-// import {getNowTime} from '../../utils/timeEffect'
+import {getNowTime} from '../../utils/timeEffect'
 // 添加/编辑物品后进行保存
 const submitForm = async(editData,fun,title)=>{
     const submitData = {
-        // wareId:'',
+        wareId:'',
         wareName:'',
         warePower:'',
         wareCount:'',
-        // createTime:'',
-        // updateTime:''
+        createTime:'',
+        updateTime:''
     };
     submitData.wareName = editData.wareName;
-    submitData.warePower = editData.warePower;
-    submitData.wareCount = editData.wareCount;
-    // const nowTime = getNowTime();
+    submitData.warePower = Number(editData.warePower);
+    submitData.wareCount = Number(editData.wareCount);
+    const nowTime = getNowTime();
     // console.log(nowTime)
     // 添加
     if(title == '添加'){
-        // submitData.wareId = '后端处理wareId'
-        // submitData.createTime = nowTime;
-        // submitData.updateTime = nowTime;
+        submitData.wareId = '后端处理wareId'
+        submitData.createTime = nowTime;
+        submitData.updateTime = nowTime;
         // console.log("请求路由：/ware/miserware/save")
         // console.log(submitData)
         try{
-            const result = await post('/ware/miserware/save',submitData)
+            const result = await post('miserware/addware',submitData)
             if (result?.msg === "success") {
                 ElMessage.success('添加成功！')
                 fun();
+            }else if(result?.msg === "物品名过长"){
+                ElMessage.info('物品名过长！')
+            }else if(result?.msg === "物品名已存在"){
+                ElMessage.info('物品名已存在！')
+            }else if(result?.msg === "请输入有效信息"){
+                ElMessage.info('请输入有效信息！')
             }else{
                 ElMessage.error('添加失败，请稍后再试！')
             }
@@ -36,15 +42,21 @@ const submitForm = async(editData,fun,title)=>{
         }
     }else if(title == '编辑'){
         submitData.wareId = editData.wareId;
-        // submitData.createTime = editData.createTime;
-        // submitData.updateTime = nowTime;
+        submitData.createTime = editData.createTime;
+        submitData.updateTime = nowTime;
         // console.log("请求路由：/ware/miserware/update")
         // console.log(submitData)
         try{
-            const result = await post('/ware/miserware/update',editData)
+            const result = await post('miserware/updateWare',submitData)
             if (result?.msg === "success") {
                 ElMessage.success('更新成功！')
                 fun();
+            }else if(result?.msg === "物品名过长"){
+                ElMessage.info('物品名过长！')
+            }else if(result?.msg === "物品名已存在"){
+                ElMessage.info('物品名已存在！')
+            }else if(result?.msg === "请输入有效信息"){
+                ElMessage.info('请输入有效信息！')
             }else{
                 ElMessage.error('更新失败，请稍后再试！')
             }
@@ -58,7 +70,7 @@ const handleDetele = async(deleteIdList,fun)=>{
     // console.log("请求路由：/ware/miserware/delete")
     // console.log(deleteIdList)
     try{
-        const result = await post('/ware/miserware/delete',deleteIdList)
+        const result = await post('miserware/deleteWare',deleteIdList)
         if (result?.msg === "success") {
             ElMessage.success('删除成功！')
             fun();
@@ -81,7 +93,7 @@ const singleDelete = async (index,row,fun)=>{
     }).then(()=>{
         handleDetele(deleteIdList,fun)
     }).catch(() => {
-        ElMessage.info("'已取消删除'")
+        ElMessage.info("已取消删除")
     })
 };
 //批量删除
@@ -101,15 +113,19 @@ const batchDelete = async(sels,fun)=>{
         }).then(()=>{
             handleDetele(deleteIdList,fun)
         }).catch(() => {
-            ElMessage.info("'已取消删除'")
+            ElMessage.info("已取消删除")
         })
     }
 };
 // 导出为表格
 const handleExport = (wareList)=>{
     import('@/utils/exportExcel').then(excel => {
+        const res = []
         // excel表示导入的模块对象
-        const res = wareList;
+        for(let i =0;i<wareList.length;i++){
+            delete wareList[i].id
+            res.push(wareList[i])
+        }
         // const one = res[0] // 返回的数组取第一项
         // const header = Object.keys(one) // 拿对象中的所有的键
         const header = ['物品id','物品名称','物品价格','库存数量','创建时间','更新时间']

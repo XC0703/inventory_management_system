@@ -35,9 +35,34 @@ export default {
       collapsed: true,
       imgClose: require('../assets/images/menuClose.png'),
       imgOpen: require('../assets/images/menuOpen.png'),
-      user: {}
+      user: {},
     }
   },
+  // created(){
+  //     const userPower = this.$store.state.userInfo.userPower
+  //     // console.log(userPower)
+  //     if(userPower>100){
+  //       this.userIdentity="超级管理员"
+  //     }else{
+  //       this.userIdentity="普通管理员"
+  //     }
+  // },
+  // watch:{
+  //   "$store.state.userInfo":{
+  //     deep:true,
+  //     handler:function(){
+  //       console.log("11")
+  //       // console.log(this.$store.state.userInfo)
+  //       const userPower = this.$store.state.userInfo.userPower
+  //       // console.log(userPower)
+  //       if(userPower>100){
+  //         this.userIdentity="超级管理员"
+  //       }else{
+  //         this.userIdentity="普通管理员"
+  //       }
+  //     }
+  //   }
+  // },
   computed:{
     userIdentity:function(){
       let userIdentity = ''
@@ -56,13 +81,15 @@ export default {
     const router = useRouter()
     const handleLogout = async() => {
       try{
-        // console.log("请求路由：/auth/miserauth/loginout")
-          const result = await post(`/auth/miserauth/loginout`)
-          if (result?.msg === "登出成功") {
+        // console.log("请求路由：miserauth/loginout")
+          const result = await post(`miserauth/loginout`)
+          if (result?.msg === "success") {
             ElMessage.success("已成功退出！");
             sessionStorage.removeItem('isLogin')
             sessionStorage.removeItem('userInfo')
             router.replace({ name: 'LoginView'})
+          }else if(result?.msg === "当前用户未登录"){
+            ElMessage.error("当前用户未登录！");
           }else{
             ElMessage.error("请重试！");
           }

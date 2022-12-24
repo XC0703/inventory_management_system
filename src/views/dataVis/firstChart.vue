@@ -7,14 +7,16 @@ let echarts = require("echarts/lib/echarts");
 
 export default {
     name: "firstChart",
+    props:["data_line"],
     mounted(){
+        // console.log(this.data_line[0])
         this.mapChart();
     },
     methods: {
         // 配置渲染map
         mapChart() {
-            var data_line = [79.54,64.44,80,75,90,87,65,97,87,90];
-            var chartDom = document.getElementById("firstChartBox");
+            const data_line = [...this.data_line];
+            const chartDom = document.getElementById("firstChartBox");
             let myChart = echarts.getInstanceByDom(chartDom)
             if(myChart!=null){
                 myChart.dispose();

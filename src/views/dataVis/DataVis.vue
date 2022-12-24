@@ -8,9 +8,9 @@
         <!-- 卡片视图区域 -->
         <el-card class="cardContainer">
             <div class="cardContainer__chartBox">
-                <firstChart v-if="currentChart==1"></firstChart>
-                <secondChart v-else-if="currentChart==2"></secondChart>
-                <thirdChart v-else-if="currentChart==3"></thirdChart>
+                <firstChart v-if="(currentChart==1&&flag)" :data_line="yearSales"></firstChart>
+                <secondChart v-else-if="(currentChart==2&&flag)" :data_bar="monthSales"></secondChart>
+                <thirdChart v-else-if="(currentChart==3&&flag)" :data_pie="wareSales"></thirdChart>
             </div>
             <div class="cardContainer__selectBox" @mouseover="selectHover=true" @mouseleave="handleSelect(false)">
                 <em class="cardContainer__selectBox__arrow">
@@ -29,8 +29,8 @@
 </template>
 
 <script>
-// import {get} from '../../utils/request';
-// import { ElMessage } from "element-plus";
+import {get} from '../../utils/request';
+import { ElMessage } from "element-plus";
 import firstChart from './firstChart'
 import secondChart from './secondChart'
 import thirdChart from './thirdChart'
@@ -40,12 +40,16 @@ export default {
         return{
             selectHover:false,
             timer:null,
-            currentChart:1
+            currentChart:1,
+            yearSales : [],
+            monthSales : [],
+            wareSales : [],
+            flag :false //是否拿到数据
         }
     },
-    // mounted(){
-    //     this.getSalesData()
-    // },
+    mounted(){
+        this.getSalesData()
+    },
     methods:{
         handleSelect(flag){
             if(!flag){
@@ -61,19 +65,27 @@ export default {
         handleCurChart(num){
             this.currentChart = num;
         },
-        // async getSalesData(){
-        //     // console.log("请求路由：/misersales/list")
-        //     try{
-        //         const result = await get('/misersales/list')
-        //         if (result?.msg === "success" && result?.page?.list) {
-        //             console.log("获取到数据")
-        //         }else{
-        //             ElMessage.error("未获取到数据！");
-        //         }
-        //     }catch{
-        //         ElMessage.error("未获取到数据！");
-        //     }
-        // }
+        async getSalesData(){
+            // console.log("请求路由：isersales/getSalesData")
+            try{
+                const result = await get('misersales/getSalesData')
+                if (result?.msg === "success" && result?.salesData) {
+                    const salesData = result.salesData
+                    // console.log(result.salesData)
+                    for(let i =0;i<result.salesData.length;i++){
+                        // console.log(Array.isArray(this.yearSales))
+                        this.yearSales.push(salesData[i].fields.yearSales)
+                        this.monthSales.push(salesData[i].fields.monthSales)
+                        this.wareSales.push(salesData[i].fields.wareSales)
+                    }
+                    this.flag = true
+                }else{
+                    ElMessage.error("未获取到数据！");
+                }
+            }catch{
+                ElMessage.error("未获取到数据！");
+            }
+        }
     },
     components:{firstChart,secondChart,thirdChart}
 }

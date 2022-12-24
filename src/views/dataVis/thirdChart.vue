@@ -8,12 +8,14 @@ let echarts = require("echarts/lib/echarts");
 
 export default {
     name: "thirdChart",
+    props:["data_pie"],
     mounted(){
         this.mapChart();
     },
     methods: {
         // 配置渲染map
         mapChart() {
+            // const data_pie = [...this.data_pie]
             var chartDom = document.getElementById("thirdChartBox");
             let myChart = echarts.getInstanceByDom(chartDom)
             if(myChart!=null){

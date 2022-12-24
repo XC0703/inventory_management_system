@@ -43,7 +43,7 @@
             <el-table-column align="center" label="物品名称" prop="wareName" :show-overflow-tooltip='true' min-width="120"></el-table-column>
             <el-table-column align="center" label="物品价格" prop="warePower" :show-overflow-tooltip='true' min-width="100" sortable="custom"></el-table-column>
             <el-table-column align="center" label="库存数量" prop="wareCount" :show-overflow-tooltip='true' min-width="100" sortable="custom"></el-table-column>
-            <el-table-column align="center" label="创建时间" prop="creatTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
+            <el-table-column align="center" label="创建时间" prop="createTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
             <el-table-column align="center" label="更新时间" prop="updateTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
             <el-table-column align="center" label="操作" min-width="175">
                 <template #default="scope">
@@ -140,8 +140,8 @@ export default {
             // 编辑/增加操作时的rules表单验证
             rules: {
                 wareName:[{ required: true, message: '请输入物品名称', trigger: 'blur' }],
-                warePower: [{ required: true, message: '请输入物品价格', trigger: 'blur' },{ type:'number',message:'必须是数字',trigger: 'blur' }],
-                wareCount:[{ required: true, message: '请输入库存数量', trigger: 'blur' },{ type:'number',message:'必须是数字',trigger: 'blur' }]
+                warePower: [{ required: true, message: '请输入物品价格', trigger: 'blur' },{ type:'number',min: 1, max: 99999999,message:'必须是处于1-99999999区间的数字',trigger: 'blur' }],
+                wareCount:[{ required: true, message: '请输入库存数量', trigger: 'blur' },{ type:'number',min: 1, max: 9999999999,message:'必须是处于1-9999999999区间的数字',trigger: 'blur' }]
             },
             // 交易操作时需要的参数
             addwareVisible: false, //控制添加订单页面显示与隐藏
@@ -157,7 +157,7 @@ export default {
         }
     },
     created () {
-        // console.log(this.$store.state.userInfo)
+        // console.log(this.$store.state.userInfo.userPower)
         // this.getWareList()
         this.showWare()
     },
@@ -179,13 +179,15 @@ export default {
             if(query!=''){
                 // console.log("请求路由：/ware/miserware/info/ware000001")
                 try{
-                    const result = await get(`/ware/miserware/info/${query}`)
-                    if (result?.msg === "success"&& result?.miserWare) {
-                        this.wareList.push(result.miserWare) //获取到数据
+                    const result = await get(`miserware/getWare/${query}`)
+                    if (result?.msg === "success"&& result?.wareInfo) {
+                        this.wareList.push(result.wareInfo) //获取到数据
                         this.loading = false
                         this.pageparm.currentPage = this.formInline.page
                         this.pageparm.pageSize = this.formInline.limit
                         this.pageparm.total =  this.wareList.length
+                    }else if(result?.msg === "该物品信息不存在"){
+                        this.$message.info("该物品信息不存在！");
                     }else{
                         this.$message.error("未获取到数据，请重新输入！");
                     }
@@ -195,9 +197,9 @@ export default {
             }else{
                 try{
                     // console.log("请求路由：/ware/miserware/list")
-                    const result = await get('/ware/miserware/list')
-                    if (result?.msg === "success" && result?.page?.list) {
-                        this.wareList = result.page.list
+                    const result = await get('miserware/getWarelist')
+                    if (result?.msg === "success" && result?.wareList) {
+                        this.wareList = result.wareList
                         this.loading = false
                         this.pageparm.currentPage = this.formInline.page
                         this.pageparm.pageSize = this.formInline.limit

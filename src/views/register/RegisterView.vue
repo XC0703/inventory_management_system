@@ -53,7 +53,7 @@
         },
         rules: {
           userName: [{ required: true, message: "请输入用户名", trigger: "blur" },
-                    { max: 10, message: "不能大于10个字符", trigger: "blur" }],
+                    { max: 15, message: "不能大于15个字符", trigger: "blur" }],
           passWord: [{ required: true, message: "请输入密码", trigger: "blur" },
                     { max: 20, message: "不能大于20个字符", trigger: "blur" }]
         },
@@ -64,12 +64,12 @@
         try{
           let result='';
           let submitData = {
-            // userId:'',
+            userId:'',
             userName:'',
             userPassword:'',
             userPower:'',
-            // createTime:'',
-            // updateTime:''
+            createTime:'',
+            updateTime:''
           };
           if(form.userName==''||form.passWord==''||form.confirmPas==''){
             this.$message.info('请输入用户名或密码')
@@ -77,22 +77,27 @@
           }else if(form.confirmPas!=form.passWord){
             this.$message.info('两次密码输入不一致，请重新输入')
           }else{
-            // submitData.userId = '后端处理userId',
+            submitData.userId = '后端处理userId',
             submitData.userName = form.userName,
             submitData.userPassword = form.passWord,
-            submitData.userPower = 20,
-            // submitData.createTime = '后端处理createTime',
-            // submitData.updateTime = '后端处理updateTime',
-            // console.log("请求路由：/auth/miserauth/register")
+            submitData.userPower = '默认注册低权限用户',
+            submitData.createTime = '后端处理createTime',
+            submitData.updateTime = '后端处理updateTime',
+            // console.log("请求路由：miserauth/register")
             // console.log(submitData)
             // 每遇到一个await都会先返回,再往下执行,变成了同步操作
-            result = await post('/auth/miserauth/register',submitData)
+            result = await post('miserauth/register',submitData)
+            // console.log(result.msg)
             // result?.data?.errno的意思是尝试获取result中的data中的error属性，它和result.data.errno的意思是一样的，但是比result.data.errno的容错性更高。
             // 代码会尝试查找errno，如果查找不到，会返回undefined，而不会报错
             if(result?.msg === "success"){
               // 在注册之后，通过路由实例跳转
               router.push({name:'LoginView'})
               this.$message.success('注册成功')
+            }else if(result?.msg === "用户名或密码过长"){
+              this.$message.info('用户名或密码过长,请重新注册')
+            }else if(result?.msg === "用户已存在"){
+              this.$message.info('用户已存在,请重新注册')
             }else{
               this.$message.error('注册失败')
             }

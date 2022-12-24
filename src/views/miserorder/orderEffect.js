@@ -1,11 +1,15 @@
 import {post} from '../../utils/request';
 import { ElMessage,ElMessageBox } from "element-plus";
-// import {getNowTime} from '../../utils/timeEffect'
 // 导出为表格
 const handleExport = (orderList)=>{
     import('@/utils/exportExcel').then(excel => {
         // excel表示导入的模块对象
-        const res = orderList;
+        const res = []
+        // excel表示导入的模块对象
+        for(let i =0;i<orderList.length;i++){
+            delete orderList[i].id
+            res.push(orderList[i])
+        }
         // const one = res[0] // 返回的数组取第一项
         // const header = Object.keys(one) // 拿对象中的所有的键
         const header = ['订单id','用户id','用户名称','物品id','物品名称','物品数量','创建时间']
@@ -21,10 +25,10 @@ const handleExport = (orderList)=>{
 }
 // 删除订单函数
 const handleDetele = async(deleteIdList,fun)=>{
-    // console.log("请求路由：/order/miserorder/delete")
+    // console.log("请求路由：miserorder/deleteOrder")
     // console.log(deleteIdList)
     try{
-        const result = await post('/order/miserorder/delete',deleteIdList)
+        const result = await post('miserorder/deleteOrder',deleteIdList)
         if (result?.msg === "success") {
             ElMessage.success('删除成功！')
             fun();
@@ -47,7 +51,7 @@ const singleDelete = async (index,row,fun)=>{
     }).then(()=>{
         handleDetele(deleteIdList,fun)
     }).catch(() => {
-        ElMessage.info("'已取消删除'")
+        ElMessage.info("已取消删除")
     })
 };
 //批量删除
@@ -71,38 +75,4 @@ const batchDelete = async(sels,fun)=>{
         })
     }
 };
-// 编辑订单后进行保存
-const submitForm = async(editData,fun)=>{
-    const submitData = {
-        orderId:'',
-        userId:'',
-        userName:'',
-        wareId:'',
-        wareName:'',
-        wareCount:'',
-        //creatTime:'',
-        //updateTime:''
-    };
-    submitData.orderId = editData.orderId;
-    submitData.userId = editData.userId;
-    submitData.userName = editData.userName;
-    submitData.wareId = editData.wareId;
-    submitData.wareName = editData.wareName;
-    submitData.wareCount = editData.wareCount;
-    //submitData.creatTime = editData.creatTime;
-    //submitData.updateTime = getNowTime();
-    // console.log("请求路由：/order/miserorder/update")
-    // console.log(submitData)
-    try{
-        const result = await post('/order/miserorder/update',submitData)
-        if (result?.msg === "success") {
-            ElMessage.success('更新成功！')
-            fun();
-        }else{
-            ElMessage.error('更新失败，请稍后再试！')
-        }
-    }catch{
-        ElMessage.error('更新失败，请稍后再试！')
-    }
-};
-export {submitForm,handleExport,singleDelete,batchDelete};
+export {handleExport,singleDelete,batchDelete};

@@ -1,35 +1,41 @@
 import store from '../../store'
 import {post} from '../../utils/request';
 import { ElMessage,ElMessageBox } from "element-plus";
+import {getNowTime} from '../../utils/timeEffect'
 import router from '@/router'
-// import {getNowTime} from '../../utils/timeEffect'
 // 添加/编辑用户后进行保存
 const submitForm = async(editData,fun,title)=>{
     const submitData = {
-        // userId:'',
+        userId:'',
         userName:'',
         userPassword:'',
         userPower:'',
-        // createTime:'',
-        // updateTime:''
+        createTime:'',
+        updateTime:''
     };
     submitData.userName = editData.userName;
     submitData.userPassword = editData.userPassword;
-    submitData.userPower = editData.userPower;
-    // const nowTime = getNowTime();
+    submitData.userPower = Number(editData.userPower);
+    const nowTime = getNowTime();
     // console.log(nowTime)
     // 添加
     if(title == '添加'){
-        // submitData.userId = "后端处理userId"
-        // submitData.createTime = nowTime;
-        // submitData.updateTime = nowTime;
+        submitData.userId = "后端处理userId"
+        submitData.createTime = nowTime;
+        submitData.updateTime = nowTime;
         // console.log("请求路由：/user/miseruser/save")
         // console.log(submitData)
         try{
-            const result = await post('/user/miseruser/save',submitData)
+            const result = await post('miseruser/addUser',submitData)
             if (result?.msg === "success") {
                 ElMessage.success('添加成功！')
                 fun();
+            }else if(result?.msg === "用户名或密码过长"){
+                ElMessage.info('用户名或密码过长！')
+            }else if(result?.msg === "用户已存在"){
+                ElMessage.info('用户已存在！')
+            }else if(result?.msg === "请输入有效信息"){
+                ElMessage.info('请输入有效信息！')
             }else{
                 ElMessage.error('添加失败，请稍后再试！')
             }
@@ -43,7 +49,8 @@ const submitForm = async(editData,fun,title)=>{
         // console.log("请求路由：/user/miseruser/update")
         // console.log(submitData)
         try{
-            const result = await post('/user/miseruser/update',submitData)
+            // console.log(store.state.userInfo.userId)
+            const result = await post('miseruser/updateUser',submitData)
             if (result?.msg === "success") {
                 ElMessage.success('更新成功！')
                 fun();
@@ -53,6 +60,12 @@ const submitForm = async(editData,fun,title)=>{
                     sessionStorage.removeItem('userInfo')
                     router.replace({ name: 'LoginView'})
                 }
+            }else if(result?.msg === "用户名或密码过长"){
+                ElMessage.info('用户名或密码过长！')
+            }else if(result?.msg === "用户名已存在"){
+                ElMessage.info('用户名已存在！')
+            }else if(result?.msg === "请输入有效信息"){
+                ElMessage.info('请输入有效信息！')
             }else{
                 ElMessage.error('更新失败，请稍后再试！')
             }
@@ -66,7 +79,7 @@ const handleDetele = async(deleteIdList,fun)=>{
     // console.log("请求路由：/user/miseruser/delete")
     // console.log(deleteIdList)
     try{
-        const result = await post('/user/miseruser/delete',deleteIdList)
+        const result = await post('miseruser/deleteUser',deleteIdList)
         if (result?.msg === "success") {
             ElMessage.success('删除成功！')
             fun();
@@ -89,7 +102,7 @@ const singleDelete = async (index,row,fun)=>{
     }).then(()=>{
         handleDetele(deleteIdList,fun)
     }).catch(() => {
-        ElMessage.info("'已取消删除'")
+        ElMessage.info("已取消删除")
     })
 };
 //批量删除
@@ -109,15 +122,19 @@ const batchDelete = async(sels,fun)=>{
         }).then(()=>{
             handleDetele(deleteIdList,fun)
         }).catch(() => {
-            ElMessage.info("'已取消删除'")
+            ElMessage.info("已取消删除")
         })
     }
 };
 // 导出为表格
 const handleExport = (userList)=>{
     import('@/utils/exportExcel').then(excel => {
+        const res = []
         // excel表示导入的模块对象
-        const res = userList;
+        for(let i =0;i<userList.length;i++){
+            delete userList[i].id
+            res.push(userList[i])
+        }
         // const one = res[0] // 返回的数组取第一项
         // const header = Object.keys(one) // 拿对象中的所有的键
         const header = ['用户id','用户名称','用户密码','用户权限','创建时间','更新时间']

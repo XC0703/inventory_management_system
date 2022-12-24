@@ -71,7 +71,7 @@ const router = createRouter({
 router.beforeEach((to,from,next)=>{
     // isLogin在本地存储中
     const isLogin = sessionStorage.isLogin;
-
+    // console.log(store.state.userInfo.userPower)
     //to：进入到哪个路由去
     //from：从哪个路由离开
     //next：路由的控制参数，常用的有next(true)和next(false)

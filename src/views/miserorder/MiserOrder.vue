@@ -39,34 +39,15 @@
             <el-table-column align="center" label="物品id" prop="wareId" :show-overflow-tooltip='true' min-width="85"></el-table-column>
             <el-table-column align="center" label="物品名称" prop="wareName" :show-overflow-tooltip='true' min-width="100"></el-table-column>
             <el-table-column align="center" label="物品数量" prop="wareCount" :show-overflow-tooltip='true' min-width="100" sortable="custom"></el-table-column>
-            <el-table-column align="center" label="创建时间" prop="creatTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
-            <el-table-column align="center" label="操作" min-width="140">
+            <el-table-column align="center" label="创建时间" prop="createTime" :show-overflow-tooltip='true' :formatter="formatDate" min-width="145" sortable="custom"></el-table-column>
+            <el-table-column align="center" label="操作" min-width="100">
                 <template #default="scope">
-                    <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                     <el-button size="small" type="danger" @click="singleDelete(scope.$index, scope.row,showOrder)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
         <!-- 分页组件 -->
         <PaginateView v-bind:child-msg="pageparm" @callFather="callFather"></PaginateView>
-        <!-- 编辑界面 -->
-        <el-dialog title="编辑" v-model="editFormVisible" width="30%" :before-close="closeDialog">
-            <el-form label-width="1.2rem" :model="editForm" ref="editForm">
-                <el-form-item label="负责人名称" prop="userName">
-                <el-input size="small" v-model="editForm.userName" auto-complete="off" :disabled="true"></el-input>
-                </el-form-item>
-                <el-form-item label="物品名称" prop="wareName">
-                <el-input size="small" v-model="editForm.wareName" auto-complete="off" :disabled="true"></el-input>
-                </el-form-item>
-                <el-form-item label="物品数量" prop="wareCount">
-                    <el-input-number v-model="editForm.wareCount" size="small" :min="1" />
-                </el-form-item>
-            </el-form>
-            <div slot:footer class="dialog-footer" style="padding-left:0.8rem">
-                <el-button style="margin-right:0.6rem;" size="small" @click="closeDialog">取消</el-button>
-                <el-button size="small" type="primary" :loading="loading" class="title"  @click="submitForm(editForm,showOrder);closeDialog()">保存</el-button>
-            </div>
-        </el-dialog>
     </el-card>
 </div>
 </template>
@@ -76,7 +57,7 @@ import tableSortChange from '../../utils/tableSortChange'
 import {formatDate} from '../../utils/timeEffect'
 import {get} from '../../utils/request';
 import PaginateView from '../../components/PaginateView'
-import { submitForm,handleExport,singleDelete,batchDelete } from './orderEffect'
+import { handleExport,singleDelete,batchDelete } from './orderEffect'
 import simulateDataList from '@/assets/simulateData/dataOrder.json'
 export default {
     name:'MiserOrder',
@@ -102,17 +83,6 @@ export default {
                 column:'',
                 // 页面此时需要展示的订单列表
                 orderList: [],
-                // 编辑操作需要的参数
-                editFormVisible: false, //控制编辑页面显示与隐藏
-                editForm: {
-                    orderId:'',
-                    userId:'',
-                    userName:'',
-                    wareId:'',
-                    wareName:'',
-                    wareCount:'',
-                    creatTime:''
-                },
                 //选中的值显示--用于批量删除
                 sels: []
         }
@@ -137,15 +107,17 @@ export default {
         async getOrder(query){
             this.orderList = [];
             if(query!=''){
-                // console.log("请求路由：/order/miserorder/info/order000001")
+                // console.log("请求路由：miserorder/getOrder/order000001")
                 try{
-                    const result = await get(`/order/miserorder/info/${query}`)
+                    const result = await get(`miserorder/getOrder/${query}`)
                     if (result?.msg === "success") {
-                    this.orderList.push(result.miserOrder) //获取到数据
-                    this.loading = false
-                    this.pageparm.currentPage = this.formInline.page
-                    this.pageparm.pageSize = this.formInline.limit
-                    this.pageparm.total =  this.orderList.length
+                        this.orderList.push(result.orderInfo) //获取到数据
+                        this.loading = false
+                        this.pageparm.currentPage = this.formInline.page
+                        this.pageparm.pageSize = this.formInline.limit
+                        this.pageparm.total =  this.orderList.length
+                    }else if(result?.msg === "该订单信息不存在"){
+                        this.$message.info("该订单信息不存在");
                     }else{
                         this.$message.error("未获取到数据，请重新输入！");
                     }
@@ -154,10 +126,10 @@ export default {
                 }
             }else{
                 try{
-                    // console.log("请求路由：/order/miserorder/list")
-                    const result = await get('/order/miserorder/list')
-                    if (result?.msg === "success" && result?.page?.list) {
-                        this.orderList = result.page.list
+                    // console.log("请求路由：miserorder/getOrderlist")
+                    const result = await get('miserorder/getOrderlist')
+                    if (result?.msg === "success" && result?.orderList) {
+                        this.orderList = result.orderList
                         this.loading = false
                         this.pageparm.currentPage = this.formInline.page
                         this.pageparm.pageSize = this.formInline.limit
@@ -194,22 +166,6 @@ export default {
             this.showOrder()
             this.sortChange(this.column)
         },
-        // 编辑
-        async handleEdit(index, row){
-            this.query='' //编辑之前记得清空搜索栏
-            this.editFormVisible = true
-            if (row != undefined && row != 'undefined') {
-                this.editForm.orderId = row.orderId
-                this.editForm.userId = row.userId
-                this.editForm.userName = row.userName
-                this.editForm.wareId = row.wareId
-                this.editForm.wareName = row.wareName
-                this.editForm.wareCount = row.wareCount
-                this.editForm.creatTime = formatDate(row.creatTime)
-            }
-        },
-        // 编辑订单后进行保存
-        submitForm,
         // 导出为表格函数 
         handleExport,
         // 自定义表格排序规则

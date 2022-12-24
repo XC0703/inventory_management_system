@@ -8,9 +8,9 @@
         <el-form ref="form" :model="form" :rules="rules">
           <el-form-item prop="userId">
             <el-input
-              v-model.number="form.userId"
+              v-model.number="form.userName"
               clearable
-              placeholder="请输入账号"
+              placeholder="请输入用户名"
             ></el-input>
           </el-form-item>
           <el-form-item prop="passWord">
@@ -42,18 +42,18 @@
 
 <script>
 import router from '@/router'
-import { post } from '../../utils/request';
+import { get,post } from '../../utils/request';
 
 export default {
   name: 'LoginView',
   data(){
     return{
       form: {
-        userId: "",
+        userName: "",
         passWord: "",
       },
       rules: {
-        userId: [{ required: true, message: "请输入账号", trigger: "blur" },{ type:'number',message:'必须是数字',trigger: 'blur' }],
+        user: [{ required: true, message: "请输入用户名", trigger: "blur" }],
         passWord: [{ required: true, message: "请输入密码", trigger: "blur" },],
       },
       checked: false,
@@ -72,27 +72,27 @@ export default {
         let result='';
         let submitData = {
           userId:'',
-          // userName:'',
+          userName:'',
           userPassword:'',
-          // userPower:'',
-          // createTime:'',
-          // updateTime:''
+          userPower:'',
+          createTime:'',
+          updateTime:''
         };
-        if(form.userId==''||form.passWord==''){
+        if(form.userName==''||form.passWord==''){
           this.$message.info('请输入账户或密码')
           return;
         }else{
-          // submitData.userId = '后端处理userId',
-          submitData.userId = form.userId,
+          submitData.userId = '后端处理userId',
+          submitData.userName = form.userName,
           submitData.userPassword = form.passWord,
-          // submitData.userPower = '后端处理userPower',
-          // submitData.createTime = '后端处理createTime',
-          // submitData.updateTime = '后端处理updateTime',
-          // console.log("请求路由：/auth/miserauth/login")
+          submitData.userPower = '后端处理userPower',
+          submitData.createTime = '后端处理createTime',
+          submitData.updateTime = '后端处理updateTime',
+          // console.log("请求路由：/miserauth/login")
           // console.log(submitData)
           // 每遇到一个await都会先返回,再往下执行,变成了同步操作
           // console.log(submitData)
-          result = await post('/auth/miserauth/login',submitData)
+          result = await post('/miserauth/login',submitData)
         }
         // result?.data?.errno的意思是尝试获取result中的data中的error属性，它和result.data.errno的意思是一样的，但是比result.data.errno的容错性更高。
         // 代码会尝试查找errno，如果查找不到，会返回undefined，而不会报错
@@ -101,8 +101,13 @@ export default {
           // 在登录之后，通过路由实例跳转
           router.push({name:'MiserWare'})
           this.$message.success('登录成功')
-          this.$store.commit('changeUserInfo',result.data)
-          // this.getLoginUser()
+          this.getLoginUser()
+        }else if(result?.msg === "密码输入错误"){
+          this.$message.info('密码输入错误')
+        }else if(result?.msg === "该用户不存在"){
+          this.$message.info('该用户不存在')
+        }else if(result?.msg === "该用户已登录"){
+          this.$message.info('该用户已登录')
         }else{
           this.$message.error('登录失败')
         }
@@ -118,26 +123,18 @@ export default {
     // 获得当前登录信息，需要用到的地方：
     // 1、登录时验证是否为超级管理员，是的话开放用户管理功能，同时临时订单展示所有；不是则关闭用户管理功能，同时临时订单展示该管理员对应的临时订单
     // 2、在物品管理页面加入订单或者临时订单时，绑定当前所登录用户信息
-    // 3、编辑用户信息时，如果编辑的是自己的信息，则更新成功后需要退出重新登录
     async getLoginUser(){
         try{
-          // const resultData={
-          //       "creatTime":1668922451000,
-          //       "updateTime":1668922451000,
-          //       "userId":15,
-          //       "userName":"scu",
-          //       "userPassword":"12345",
-          //       "userPower":120
-          // }
-            const result = await post('/auth/miserauth/getloginUser')
-            if (result?.msg == "获取用户信息成功" && result?.data) {
-              console.log(result.data)
-              this.$message.success('获取当前所登录用户信息成功！')
+            const result = await get('miserauth/getloginUser')
+            if (result?.msg === "success" && result?.userInfo) {
+              // console.log(result.userInfo.fields)
+              this.$store.commit('changeUserInfo',result.userInfo.fields)
+              // this.$message.success('获取当前所登录用户信息成功！')
             }else{
-              this.$message.error('获取当前所登录用户信息失败！')
+              this.$message.info('未查找到登录信息！')
             }
         }catch{
-            this.$message.error('获取当前所登录用户信息失败！')
+              this.$message.error('获取当前所登录用户信息失败！')
         }
     },
     // 记住密码
